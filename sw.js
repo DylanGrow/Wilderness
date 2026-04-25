@@ -1,7 +1,4 @@
-// Service Worker for Wilderness Survival Guide PWA
-// Cache-first strategy with offline fallback
-
-const CACHE_VERSION = 'survive-v1';
+const CACHE_VERSION = 'survive-v2';
 const CACHE_NAME = `survive-${CACHE_VERSION}`;
 
 const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/sw.js'];
@@ -21,16 +18,14 @@ const UNSPLASH_IMAGES = [
 
 const ALL_PRECACHE = [...CORE_ASSETS, ...UNSPLASH_IMAGES];
 
-const OFFLINE_FALLBACK = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Offline - Survive</title><style>:root{--bg:#0f1410;--text:#e8e4d8;--accent:#4a7c3f}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:2rem}.container{max-width:500px}h1{color:var(--accent);margin-bottom:1rem}p{line-height:1.6;opacity:0.9}.icon{width:64px;height:64px;margin:0 auto 1.5rem;fill:var(--accent)}</style></head><body><div class="container"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg><h1>You're Offline</h1><p>The Wilderness Survival Guide is cached and ready. Most content is available without connection.</p><p>If you're seeing this, try refreshing the page or check your network settings.</p></div></body></html>`;
-
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.all(ALL_PRECACHE.map((url) =>
         fetch(url).then((response) => {
           if (response.ok) return cache.put(url, response);
-          return cache.put(url, new Response('', { status: 200, statusText: 'Cached' }));
-        }).catch(() => cache.put(url, new Response('', { status: 200, statusText: 'Cached' })))
+          return cache.put(url, new Response('', { status: 200 }));
+        }).catch(() => cache.put(url, new Response('', { status: 200 })))
       ));
     }).then(() => self.skipWaiting())
   );
@@ -48,6 +43,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== 'GET' || !url.protocol.startsWith('http')) return;
+  
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
@@ -59,17 +55,12 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       }).catch(() => {
         if (request.mode === 'navigate') {
-          return caches.match('/offline.html').then((fallback) => {
-            if (fallback) return fallback;
-            return new Response(OFFLINE_FALLBACK, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+          return new Response('<h1>Offline</h1><p>Content is cached for offline use.</p>', {
+            headers: { 'Content-Type': 'text/html' }
           });
         }
-        return new Response('Resource not available offline', { status: 408 });
+        return new Response('Offline', { status: 408 });
       });
     })
   );
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
