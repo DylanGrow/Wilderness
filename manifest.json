@@ -1,19 +1,20 @@
 {
   "name": "Wilderness Survival Guide",
   "short_name": "Survive",
-  "start_url": "/",
+  "start_url": "/?utm_source=homescreen",
   "display": "standalone",
   "background_color": "#0f1410",
   "theme_color": "#2d4a1e",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='88' fill='%232d4a1e'/%3E%3Cpath d='M96 28 L110 80 L162 96 L110 112 L96 164 L82 112 L30 96 L82 80 Z' fill='%234a7c3f'/%3E%3Ccircle cx='96' cy='96' r='12' fill='%23c9a84c'/%3E%3C/svg%3E",
+      "src": "image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='88' fill='%232d4a1e'/%3E%3Cpath d='M96 28 L110 80 L162 96 L110 112 L96 164 L82 112 L30 96 L82 80 Z' fill='%234a7c3f'/%3E%3Ccircle cx='96' cy='96' r='12' fill='%23c9a84c'/%3E%3C/svg%3E",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='240' fill='%232d4a1e'/%3E%3Cpath d='M256 96 L296 224 L424 256 L296 288 L256 416 L216 288 L88 256 L216 224 Z' fill='%234a7c3f'/%3E%3Ccircle cx='256' cy='256' r='32' fill='%23c9a84c'/%3E%3C/svg%3E",
+      "src": "image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='240' fill='%232d4a1e'/%3E%3Cpath d='M256 96 L296 224 L424 256 L296 288 L256 416 L216 288 L88 256 L216 224 Z' fill='%234a7c3f'/%3E%3Ccircle cx='256' cy='256' r='32' fill='%23c9a84c'/%3E%3C/svg%3E",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
