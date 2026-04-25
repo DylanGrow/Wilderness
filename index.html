@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Wilderness Survival Guide - Offline PWA">
+<meta name="theme-color" content="#2d4a1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Survive - Wilderness Survival Guide</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='88' fill='%232d4a1e'/%3E%3Cpath d='M96 28 L110 80 L162 96 L110 112 L96 164 L82 112 L30 96 L82 80 Z' fill='%234a7c3f'/%3E%3Ccircle cx='96' cy='96' r='12' fill='%23c9a84c'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#0f1410;--bg2:#1a2318;--bg3:#243020;--accent:#4a7c3f;--accent2:#6fa85e;--gold:#c9a84c;--text:#e8e4d8;--text2:#a09b8c;--danger:#c0392b;--info:#3a7bd5;--shadow:0 4px 20px rgba(0,0,0,.4);--transition:all .3s ease}
+body.light{--bg:#f0ede4;--bg2:#fff;--bg3:#e8e4d8;--text:#1a1a1a;--text2:#5a5a5a;--shadow:0 4px 20px rgba(0,0,0,.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);transition:var(--transition);overflow-x:hidden}
+h1,h2,h3,h4{font-weight:600;letter-spacing:-.02em;line-height:1.3;margin-bottom:1rem}
+h1{font-size:2.5rem}h2{font-size:2rem;color:var(--accent)}h3{font-size:1.5rem;color:var(--accent2);margin-top:2rem}h4{font-size:1.2rem;color:var(--gold)}
+p{margin-bottom:1rem}small,.label{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)}
+strong,b{color:var(--accent2);font-weight:600}.danger{color:var(--danger);font-weight:600}.info{color:var(--info)}
+.container{max-width:900px;margin:0 auto;padding:0 24px}
+section{padding:80px 0;position:relative}@media(max-width:768px){section{padding:48px 0}h1{font-size:2rem}h2{font-size:1.75rem}}
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:1000;transition:width .1s ease}
+header{position:sticky;top:0;z-index:999;background:var(--bg);border-bottom:1px solid var(--bg3);padding:12px 0;transition:var(--transition)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{display:flex;align-items:center;gap:.5rem;font-weight:600;color:var(--text);text-decoration:none}.logo svg{width:24px;height:24px;fill:var(--accent)}
+nav{display:flex;align-items:center;gap:1rem}.nav-links{display:flex;list-style:none;gap:.5rem}
+.nav-links a{color:var(--text2);text-decoration:none;padding:.5rem;font-size:.9rem;transition:var(--transition)}.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.header-actions{display:flex;align-items:center;gap:.5rem}
+.btn-icon{background:none;border:none;color:var(--text);cursor:pointer;padding:.5rem;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:var(--transition)}.btn-icon:hover{background:var(--bg3);color:var(--accent)}.btn-icon svg{width:20px;height:20px;fill:currentColor}
+#menu-toggle{display:none}@media(max-width:768px){.nav-links{position:absolute;top:100%;left:0;right:0;background:var(--bg);flex-direction:column;padding:1rem;border-bottom:1px solid var(--bg3);display:none}.nav-links.active{display:flex}#menu-toggle{display:flex}}
+#search-overlay{position:fixed;top:0;left:0;right:0;background:var(--bg);padding:1rem 24px;z-index:1000;display:none;border-bottom:1px solid var(--bg3)}#search-overlay.active{display:block}
+#search-input{width:100%;padding:.75rem 1rem;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;color:var(--text);font-size:1rem}#search-input:focus{outline:2px solid var(--accent)}
+#search-results{margin-top:1rem;max-height:60vh;overflow-y:auto}.search-result{padding:.75rem;border-bottom:1px solid var(--bg3);cursor:pointer}.search-result:hover{background:var(--bg3)}.search-result mark{background:var(--gold);color:var(--bg);padding:0 2px}
+.hero{position:absolute;top:0;left:0;right:0;height:100%;background-size:cover;background-position:center;z-index:-1}.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,20,16,.7),rgba(15,20,16,.95))}
+.hero-content{position:relative;z-index:1;color:var(--text)}
+.card{background:var(--bg2);border-radius:12px;padding:1.5rem;margin:1rem 0;box-shadow:var(--shadow)}.grid{display:grid;gap:1rem}@media(min-width:768px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
+.diagram{width:100%;max-width:400px;margin:1rem auto;display:block}.diagram svg{width:100%;height:auto;fill:var(--accent);stroke:var(--text);stroke-width:1}
+.compass-container{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:1rem;background:var(--bg2);border-radius:12px;margin:1rem 0}
+.compass-svg{width:280px;height:280px;cursor:grab;touch-action:none}.compass-svg:active{cursor:grabbing}
+.compass-controls{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}.compass-controls input{width:80px;padding:.5rem;background:var(--bg3);border:1px solid var(--accent);border-radius:6px;color:var(--text);text-align:center}
+.compass-controls button{padding:.5rem 1rem;background:var(--accent);color:var(--bg);border:none;border-radius:6px;cursor:pointer;font-weight:500;transition:var(--transition)}.compass-controls button:hover{background:var(--accent2)}
+.morse-container{background:var(--bg2);border-radius:12px;padding:1.5rem;margin:1rem 0}
+.morse-display{font-family:monospace;font-size:1.5rem;letter-spacing:.3em;padding:1rem;background:var(--bg3);border-radius:8px;margin:1rem 0;min-height:3rem;text-align:center}.morse-display span.active{color:var(--gold)}
+.morse-controls{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin:1rem 0}.morse-controls input[type="range"]{flex:1;min-width:150px}
+.morse-controls button{padding:.5rem 1rem;background:var(--accent);color:var(--bg);border:none;border-radius:6px;cursor:pointer;font-weight:500}.morse-controls button:hover{background:var(--accent2)}.morse-controls button.stop{background:var(--danger)}
+.morse-phrases{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}.morse-phrase{padding:.4rem .8rem;background:var(--bg3);border-radius:20px;font-size:.9rem;cursor:pointer;transition:var(--transition)}.morse-phrase:hover{background:var(--accent);color:var(--bg)}
+.morse-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}.morse-table td{padding:.5rem;border:1px solid var(--bg3);text-align:center}.morse-table .char{font-weight:600;color:var(--accent2);cursor:pointer}.morse-table .code{font-family:monospace;color:var(--gold)}
+.solar-calculator{background:var(--bg2);border-radius:12px;padding:1.5rem;margin:1rem 0}
+.solar-inputs{display:grid;gap:1rem;margin-bottom:1rem}.solar-inputs label{display:flex;flex-direction:column;gap:.3rem}
+.solar-inputs input,.solar-inputs select{padding:.5rem;background:var(--bg3);border:1px solid var(--bg3);border-radius:6px;color:var(--text)}
+.solar-output{background:var(--bg3);border-radius:8px;padding:1rem;margin:1rem 0}.solar-output .value{font-size:2rem;font-weight:600;color:var(--gold)}
+.solar-diagram{width:100%;max-width:400px;margin:1rem auto}
+.pack-list{list-style:none}.pack-category{margin:1.5rem 0}.pack-category h4{border-bottom:2px solid var(--accent);padding-bottom:.5rem;margin-bottom:.75rem}
+.pack-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0}.pack-item input[type="checkbox"]{width:18px;height:18px;margin-top:3px;accent-color:var(--accent);cursor:pointer}
+.pack-item label{cursor:pointer;flex:1}.pack-item.checked label{text-decoration:line-through;opacity:.7}
+.pack-actions{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap}.pack-actions button{padding:.5rem 1rem;background:var(--accent);color:var(--bg);border:none;border-radius:6px;cursor:pointer;font-weight:500}
+.pack-actions button.secondary{background:var(--bg3);color:var(--text)}.pack-count{font-weight:600;color:var(--gold)}
+footer{background:var(--bg2);padding:3rem 0;text-align:center;border-top:1px solid var(--bg3)}footer p{margin:.5rem 0;color:var(--text2)}
+.pwa-prompt{display:none;margin-top:1rem;padding:1rem;background:var(--bg3);border-radius:8px}.pwa-prompt.show{display:block}
+.hidden{display:none!important}.text-center{text-align:center}.mt-2{margin-top:2rem}.mb-2{margin-bottom:2rem}
+@media print{header,footer,#search-overlay,.no-print{display:none!important}body{background:#fff;color:#000}section{padding:20px 0;page-break-inside:avoid}.hero{display:none}.card{box-shadow:none;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="search-overlay"><div class="container"><input type="search" id="search-input" placeholder="Search... (ESC to close)"><div id="search-results"></div></div></div>
+<header><div class="container header-inner">
+<a href="#" class="logo"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>Survive</a>
+<nav><ul class="nav-links" id="nav-links">
+<li><a href="#mindset">Mindset</a></li><li><a href="#5cs">5 C's</a></li><li><a href="#water">Water</a></li><li><a href="#navigation">Navigation</a></li><li><a href="#signaling">Signaling</a></li><li><a href="#firstaid">First Aid</a></li><li><a href="#weather">Weather</a></li><li><a href="#solar">Solar</a></li><li><a href="#packlist">Pack List</a></li>
+</ul></nav>
+<div class="header-actions">
+<button class="btn-icon" id="search-btn" aria-label="Search"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+<button class="btn-icon" id="theme-toggle" aria-label="Toggle theme"><svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg></button>
+<button class="btn-icon" id="menu-toggle" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+</div></div></header>
+<main>
+
+<!-- SECTION 1: Survival Mindset -->
+<section id="mindset"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>The Survival Mindset</h2>
+<div class="card">
+<p><strong>Panic kills more people than the wilderness.</strong> Your mind is your most critical tool—or your greatest liability.</p>
+<h3>The STOP Acronym</h3><p>When in trouble, apply <strong>STOP</strong>: <strong>S</strong>it/Stop, <strong>T</strong>hink, <strong>O</strong>bserve, <strong>P</strong>lan.</p>
+<h3>The Rule of 3s</h3><ul><li><strong>3 minutes without air</strong>: Airway first.</li><li><strong>3 hours without shelter</strong> in harsh conditions: Hypothermia risk.</li><li><strong>3 days without water</strong>: Dehydration impairs judgment.</li><li><strong>3 weeks without food</strong>: Starvation is long-term.</li></ul>
+<svg class="diagram" viewBox="0 0 400 300"><defs><style>.pyr{fill:var(--bg3);stroke:var(--accent);stroke-width:2}.txt{fill:var(--text);font-size:12px;font-weight:500}</style></defs><polygon class="pyr" points="200,20 380,280 20,280"/><polygon class="pyr" points="200,60 340,280 60,280"/><polygon class="pyr" points="200,100 300,280 100,280"/><polygon class="pyr" points="200,140 260,280 140,280"/><text class="txt" x="200" y="45" text-anchor="middle">AIR (3 min)</text><text class="txt" x="200" y="85" text-anchor="middle">SHELTER (3 hrs)</text><text class="txt" x="200" y="125" text-anchor="middle">WATER (3 days)</text><text class="txt" x="200" y="165" text-anchor="middle">FOOD (3 weeks)</text></svg>
+<h3>Positive Mental Attitude</h3><p>Break challenges into small goals. Talk to yourself. Remember: you have survived 100% of your worst days so far.</p>
+<p class="label">Decision framework: Does this address my most urgent need? What are risks of inaction? What resources does this consume? Can I reverse this?</p>
+</div></div></section>
+
+<!-- SECTION 2: The 5 C's -->
+<section id="5cs"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M12 2L4 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-8-4zm0 10.99c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm5.3-3.3c-.38-.38-1-.38-1.4 0l-1.2 1.2-1.2-1.2c-.38-.38-1-.38-1.4 0-.38.38-.38 1 0 1.4l1.2 1.2-1.2 1.2c-.38.38-.38 1 0 1.4.38.38 1 .38 1.4 0l1.2-1.2 1.2 1.2c.38.38 1 .38 1.4 0 .38-.38.38-1 0-1.4l-1.2-1.2 1.2-1.2c.38-.4.38-1.02 0-1.4z"/></svg>The 5 C's</h2>
+<div class="card">
+<p>The <strong>5 C's of Survivability</strong> framework for prioritizing gear that multiplies your skills.</p>
+<h3>C1 — Cutting Tool</h3><p><strong>A blade is essential</strong> for shelter, food, fire, tools, first aid. Prefer full-tang fixed blade 3-5". Keep sharp, dry, sheathed. Cut away from body.</p>
+<h3>C2 — Combustion Device</h3><p><strong>Fire = warmth, water purification, signaling, morale</strong>. Carry: lighter ×2, ferro rod, waterproof matches. Tinder: char cloth, fatwood, birch bark, cattail fluff. Store dry.</p>
+<h4>Fire Lays</h4><ul><li><strong>Teepee</strong>: Best for ignition, tall flame.</li><li><strong>Log Cabin</strong>: Long burn, stable for cooking.</li><li><strong>Star</strong>: Fuel-efficient, adjustable.</li><li><strong>Lean-to</strong>: Wind-resistant.</li></ul>
+<p><strong>Lighting steps</strong>: 1) Clear site, 2) Gather tinder/kindling/fuel, 3) Build lay, 4) Ignite from upwind, 5) Nurture flame, 6) Scale up. <span class="danger">Extinguish completely: stir, water, stir, feel.</span></p>
+<h3>C3 — Cover (Shelter)</h3><p><strong>Shelter priority #2</strong> in cold/wet. Site: windbreak, flat, drain away. Avoid widow makers, flood zones. Insulate with dead air space.</p>
+<h4>Heat Loss</h4><ul><li><strong>Conduction</strong>: Ground contact → insulate.</li><li><strong>Convection</strong>: Wind → windproof layer.</li><li><strong>Radiation</strong>: Heat loss → reflective layer.</li><li><strong>Evaporation</strong>: Moisture → stay dry, ventilate.</li></ul>
+<h4>Shelter Builds</h4><p><strong>Debris Hut</strong>: Ridgepole 9-10', ribbing 45°, debris 2' thick, bedding 4". <strong>Lean-To</strong>: Ridgeline 4-5', roof 45-60°, reflector wall. <strong>Quinzhee</strong>: Snow mound 6-8', sinter 2hrs, depth guides, ventilate. <strong>A-Frame Tarp</strong>: Ridgeline, drape, stake 45°.</p>
+<h3>C4 — Container</h3><p><strong>Single-wall metal</strong> for boiling water. Stainless/titanium, 1L+, wide mouth. Improvised: birch bark, large leaves, clay.</p>
+<h3>C5 — Cordage</h3><p><strong>Cordage multiplies tools</strong>. Natural: dogbane, nettle, inner bark. Paracord 550lb: sheath + 7-9 strands.</p>
+<h4>Essential Knots</h4><ul><li><strong>Bowline</strong>: Fixed loop, rescue.</li><li><strong>Clove Hitch</strong>: Quick post attachment.</li><li><strong>Prusik</strong>: Friction hitch, ascending.</li><li><strong>Sheet Bend</strong>: Join different ropes.</li><li><strong>Figure-8</strong>: Stopper knot.</li></ul>
+</div></div></section>
+
+<!-- SECTION 3: Finding Water -->
+<section id="water"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1464822759085-2f3662e9c074?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z"/></svg>Finding Water</h2>
+<div class="card">
+<p><strong>Dehydration timeline</strong>: 1hr: thirst, reduced performance. 3hrs: headache, fatigue. 6hrs: confusion, impaired judgment. 12hrs+: organ stress, collapse risk.</p>
+<h3>Reading Terrain for Water</h3><ul><li>Follow valleys/drainages downhill.</li><li>Animal trails converging → water.</li><li>Green vegetation, willows, cottonwood in arid areas.</li><li>Insects (bees, flies) within 1 mile of water.</li><li>Morning dew: collect with cloth, wring into container.</li><li>Birds in V-formation at dawn/dusk often heading to water.</li></ul>
+<h3>Water Sources Ranked by Safety</h3><ol><li><strong>Rainwater</strong> (safest, collect in clean container)</li><li><strong>Spring source</strong> (not downstream)</li><li><strong>Moving stream</strong> above human activity</li><li><strong>Still pond/lake</strong> (riskiest—stagnant = pathogens)</li></ol>
+<h3>Purification Methods</h3><ul><li><strong>Boiling</strong>: 1 min at sea level, 3 min above 6500ft. Kills all biological pathogens.</li><li><strong>Chemical</strong> (iodine/chlorine): Effective vs bacteria/viruses, doesn't remove sediment, alters taste.</li><li><strong>Filtration</strong>: Removes particulates, most pathogens; not viruses unless specified.</li><li><strong>SODIS</strong>: Clear PET bottle, 6hrs direct sun—UV + heat disinfect.</li></ul>
+<p><strong>Improvised filter</strong>: Layer grass → charcoal → sand → gravel in container. Pour water through. Still boil after.</p>
+<p><strong>Water from plants</strong>: Transpiration bag (branch + bag), green bamboo sections, some cacti (never barrel cactus—can cause vomiting).</p>
+<p class="danger"><strong>Warning signs</strong>: Foul odor, unusual color, animal carcasses upstream, industrial runoff. When in doubt, purify.</p>
+<p><strong>Daily needs</strong>: 2-4L depending on activity, temperature, humidity. Sip regularly; don't wait for thirst.</p>
+</div></div></section>
+
+<!-- SECTION 4: Navigation & Compass -->
+<section id="navigation"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Finding Your Way</h2>
+<div class="card">
+<h3>Interactive Compass Trainer</h3>
+<div class="compass-container">
+<svg class="compass-svg" id="compass" viewBox="0 0 280 280">
+<defs><style>.c-ring{fill:none;stroke:var(--accent);stroke-width:2}.c-tick{stroke:var(--text);stroke-width:1}.c-label{fill:var(--text);font-size:12px;font-weight:500}.c-needle{fill:var(--danger)}.c-dot{fill:var(--gold)}</style></defs>
+<circle cx="140" cy="140" r="130" class="c-ring"/>
+<g id="compass-rose"><circle cx="140" cy="140" r="120" fill="none" stroke="var(--bg3)" stroke-width="40"/><text class="c-label" x="140" y="35" text-anchor="middle">N</text><text class="c-label" x="255" y="145" text-anchor="middle">E</text><text class="c-label" x="140" y="260" text-anchor="middle">S</text><text class="c-label" x="25" y="145" text-anchor="middle">W</text><text class="c-label" x="210" y="70" text-anchor="middle">NE</text><text class="c-label" x="210" y="220" text-anchor="middle">SE</text><text class="c-label" x="70" y="220" text-anchor="middle">SW</text><text class="c-label" x="70" y="70" text-anchor="middle">NW</text></g>
+<g id="bearing-ring"><text id="bearing-display" x="140" y="145" text-anchor="middle" class="c-label" style="font-size:24px;font-weight:600">0°</text></g>
+<polygon class="c-needle" points="140,20 135,100 140,90 145,100"/><circle class="c-dot" cx="140" cy="140" r="8"/>
+<line x1="140" y1="140" x2="140" y2="30" stroke="var(--info)" stroke-width="3" stroke-dasharray="5,3" id="travel-arrow"/>
+</svg>
+<div class="compass-controls">
+<input type="number" id="bearing-input" min="0" max="360" value="0" placeholder="0-360">
+<button id="btn-n">N</button><button id="btn-ne">NE</button><button id="btn-e">E</button><button id="btn-se">SE</button>
+<button id="btn-s">S</button><button id="btn-sw">SW</button><button id="btn-w">W</button><button id="btn-nw">NW</button>
+<button id="btn-practice">Practice Mode</button>
+</div>
+<div id="live-compass" class="hidden"><small>Live Device Compass: <span id="live-bearing">--</span>° <span class="label">(magnetic north—adjust for declination)</span></small></div>
+</div>
+<h3>Written Navigation</h3>
+<p><strong>Compass basics</strong>: Baseplate, rotating bezel, magnetic needle (red = north), direction-of-travel arrow.</p>
+<p><strong>Magnetic vs True North</strong>: Magnetic north moves; declination is the angle difference. Adjust compass or map. Find local declination before travel.</p>
+<p><strong>Taking a bearing</strong>: 1) Point travel arrow at target. 2) Rotate bezel until orienting arrow aligns with magnetic needle. 3) Read bearing at index line.</p>
+<p><strong>Following a bearing</strong>: Pick a landmark on your bearing, walk to it, repeat. For obstacles: aim off intentionally, or box around (90° turns, count paces).</p>
+<p><strong>Triangulation</strong>: Take bearings to two known landmarks. Draw lines on map; intersection = your position.</p>
+<h4>Sun Navigation</h4><ul><li><strong>Shadow stick</strong>: Stick in ground, mark shadow tip, wait 15min, mark again. Line = E-W; perpendicular = N-S.</li><li><strong>Watch method</strong> (analog, N hemisphere): Point hour hand at sun; bisect angle between hour hand and 12 = S.</li><li><strong>Sun arc</strong>: Rises ~E, sets ~W; higher in summer, lower in winter.</li></ul>
+<h4>Star Navigation</h4><ul><li><strong>Polaris (N Star)</strong>: Find Big Dipper; follow pointer stars 5× their distance = Polaris = true north.</li><li><strong>Southern Cross</strong> (S hemisphere): Extend long axis 4.5× to find south celestial pole.</li><li><strong>Star movement</strong>: Stars rise E, set W. Face a rising star = facing E.</li></ul>
+<p class="label"><strong>If lost: STAY PUT</strong> unless you have definitive reason to move (visible rescue, known safe route). Moving increases search area.</p>
+</div></div></section>
+
+<!-- SECTION 5: Signaling & Morse Code -->
+<section id="signaling"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>Signal for Rescue</h2>
+<div class="card">
+<h3>Interactive Morse Code Trainer</h3>
+<div class="morse-container">
+<input type="text" id="morse-input" placeholder="Type message..." style="width:100%;padding:.5rem;background:var(--bg3);border:1px solid var(--bg3);border-radius:6px;color:var(--text);margin-bottom:1rem">
+<div class="morse-display" id="morse-display"></div>
+<div class="morse-controls">
+<label><small>Speed (WPM): <span id="wpm-val">12</span></small><input type="range" id="morse-speed" min="5" max="25" value="12"></label>
+<label><small>Tone (Hz): <span id="freq-val">600</span></small><input type="range" id="morse-freq" min="400" max="800" value="600"></label>
+<button id="morse-play">▶ Play</button><button id="morse-stop" class="stop">■ Stop</button><button id="morse-repeat">↻ Repeat</button>
+</div>
+<div class="morse-phrases">
+<span class="morse-phrase" data-text="SOS">SOS</span><span class="morse-phrase" data-text="HELP">HELP</span><span class="morse-phrase" data-text="SEND HELP">SEND HELP</span>
+<span class="morse-phrase" data-text="NEED WATER">NEED WATER</span><span class="morse-phrase" data-text="INJURED">INJURED</span><span class="morse-phrase" data-text="COME NOW">COME NOW</span><span class="morse-phrase" data-text="ALL OK">ALL OK</span>
+</div>
+<h4>Morse Reference (click to hear)</h4>
+<table class="morse-table"><tr><td class="char" data-char="A">A</td><td class="code">.-</td><td class="char" data-char="B">B</td><td class="code">-...</td><td class="char" data-char="C">C</td><td class="code">-.-.</td></tr><tr><td class="char" data-char="D">D</td><td class="code">-..</td><td class="char" data-char="E">E</td><td class="code">.</td><td class="char" data-char="F">F</td><td class="code">..-.</td></tr><tr><td class="char" data-char="G">G</td><td class="code">--.</td><td class="char" data-char="H">H</td><td class="code">....</td><td class="char" data-char="I">I</td><td class="code">..</td></tr><tr><td class="char" data-char="J">J</td><td class="code">.---</td><td class="char" data-char="K">K</td><td class="code">-.-</td><td class="char" data-char="L">L</td><td class="code">.-..</td></tr><tr><td class="char" data-char="M">M</td><td class="code">--</td><td class="char" data-char="N">N</td><td class="code">-.</td><td class="char" data-char="O">O</td><td class="code">---</td></tr><tr><td class="char" data-char="P">P</td><td class="code">.--.</td><td class="char" data-char="Q">Q</td><td class="code">--.-</td><td class="char" data-char="R">R</td><td class="code">.-.</td></tr><tr><td class="char" data-char="S">S</td><td class="code">...</td><td class="char" data-char="T">T</td><td class="code">-</td><td class="char" data-char="U">U</td><td class="code">..-</td></tr><tr><td class="char" data-char="V">V</td><td class="code">...-</td><td class="char" data-char="W">W</td><td class="code">.--</td><td class="char" data-char="X">X</td><td class="code">-..-</td></tr><tr><td class="char" data-char="Y">Y</td><td class="code">-.--</td><td class="char" data-char="Z">Z</td><td class="code">--..</td><td class="char" data-char="0">0</td><td class="code">-----</td></tr><tr><td class="char" data-char="1">1</td><td class="code">.----</td><td class="char" data-char="2">2</td><td class="code">..---</td><td class="char" data-char="3">3</td><td class="code">...--</td></tr><tr><td class="char" data-char="4">4</td><td class="code">....-</td><td class="char" data-char="5">5</td><td class="code">.....</td><td class="char" data-char="6">6</td><td class="code">-....</td></tr><tr><td class="char" data-char="7">7</td><td class="code">--...</td><td class="char" data-char="8">8</td><td class="code">---..</td><td class="char" data-char="9">9</td><td class="code">----.</td></tr></table>
+</div>
+<h3>Written Signaling</h3>
+<p><strong>Universal distress</strong>: 3 of anything = distress signal. 3 shots, 3 fires, 3 whistle blasts, 3 flashes. Pause, repeat.</p>
+<p><strong>SOS</strong>: ... --- ... Not an abbreviation; simplest, most recognizable pattern.</p>
+<h4>Ground-to-Air Signals</h4><p>Stomp in snow or arrange rocks/logs (min. 10ft tall for aircraft visibility):</p><ul><li><strong>X</strong> = Need medical help</li><li><strong>V</strong> = Need help</li><li><strong>→</strong> = Traveling this direction</li><li><strong>LL</strong> = All OK</li><li><strong>N</strong> = No / <strong>F</strong> = Need food & water</li></ul>
+<p><strong>Signal mirror</strong>: Aim flash at aircraft by holding mirror near eye, looking through sighting hole at target, adjusting until flash hits target.</p>
+<p><strong>Fire signals</strong>: 3 fires in triangle. Add green leaves for white smoke (visible against forest), rubber/plastic for black smoke (visible against snow/overcast).</p>
+<p><strong>Whistle</strong>: 3 blasts, pause, repeat. Carry pealess whistle (Fox 40)—works wet, cold, won't freeze.</p>
+<p><strong>Visual signals</strong>: Spread bright gear/clothing in open area. Movement attracts attention.</p>
+<p class="danger"><strong>Helicopter signaling</strong>: Never run toward helicopter. Arms crossed overhead = "I need help". Thumbs up = "I'm OK". Stay clear of tail rotor.</p>
+</div></div></section>
+
+<!-- SECTION 6: First Aid -->
+<section id="firstaid"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1584464491033-06628f6a8a8f?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 14H9v-2H7v-2h2v-2H7V9h2V7h2v2h2V7h2v2h2V9h2v2h-2v2h2v2h-2v2h-2v-2h-2v2z"/></svg>Wilderness First Aid</h2>
+<div class="card">
+<p class="danger"><strong>Field triage only</strong>. Get to professional help ASAP. These protocols stabilize, not cure.</p>
+<h3>Primary Survey (ABCDE)</h3><ol><li><strong>Airway</strong>: Clear obstructions, tilt head back, lift chin.</li><li><strong>Breathing</strong>: Look/listen/feel for breath. If none, begin rescue breathing if trained.</li><li><strong>Circulation</strong>: Check pulse. Control severe bleeding first.</li><li><strong>Disability</strong>: Assess consciousness (AVPU: Alert, Voice, Pain, Unresponsive).</li><li><strong>Exposure</strong>: Remove/wet clothing to assess injuries; prevent hypothermia.</li></ol>
+<h3>Bleeding Control</h3><ul><li><strong>Direct pressure</strong>: Firm pressure with clean cloth/gauze. Hold 5-10 min without peeking.</li><li><strong>Wound packing</strong>: For deep wounds, pack gauze into cavity, then apply pressure.</li><li><strong>Tourniquet</strong>: Life-threatening limb bleed only. Apply 2-3" above wound, tighten until bleeding stops. <strong>Note time applied</strong>.</li><li><strong>Improvised tourniquet</strong>: Wide band (belt, cloth) + windlass (stick). Never use wire/cord.</li><li><strong>Pressure points</strong>: Brachial (inner arm), femoral (groin) as adjuncts, not replacements.</li><li><strong>Clean wounds</strong>: Irrigate with clean water under pressure. Don't scrub.</li><li><strong>Infection signs</strong>: Red streaking, pus, fever, increasing pain—evacuate.</li></ul>
+<h3>Fractures & Sprains</h3><ul><li><strong>Fracture vs sprain</strong>: Fracture = bone break (deformity, grinding, inability to bear weight). Sprain = ligament stretch (swelling, bruising, pain with movement).</li><li><strong>Splinting</strong>: Immobilize joint above AND below injury. Use sticks, trekking poles, sleeping pad. Pad bony prominences.</li><li><strong>Open fracture</strong>: Never push bone back in. Cover with sterile dressing, splint, evacuate.</li><li><strong>Walk out vs wait</strong>: If stable, can bear weight, no neurovascular compromise → self-evacuate. Otherwise, signal for rescue.</li><li><strong>RICE for sprains</strong>: Rest, Ice/Cool (stream, snow), Compression (elastic bandage), Elevation.</li></ul>
+<h3>Hypothermia</h3><ul><li><strong>Mild</strong> (shivering, alert): Remove wet layers, insulate, warm sweet drink if conscious.</li><li><strong>Moderate</strong> (confusion, slurred speech): Handle gently, insulate head/neck, vapor barrier (plastic) under insulation.</li><li><strong>Severe</strong> (no shivering, paradoxical undressing): Passive rewarming only—insulate, don't rub extremities. Evacuate immediately.</li><li><strong>Afterdrop danger</strong>: Rewarming extremities first sends cold blood to core → cardiac risk. Rewarm core first.</li></ul>
+<h3>Heat Stroke vs Exhaustion</h3><ul><li><strong>Exhaustion</strong>: Sweating, pale, dizzy, nauseated. Treat: shade, rest, hydrate, cool.</li><li><strong>Stroke</strong> (EMERGENCY): Hot dry skin OR profuse sweating, confusion, loss of consciousness. Treat: AGGRESSIVE COOLING—wet skin, fan, ice to neck/groin/armpits. Evacuate immediately.</li></ul>
+<h3>Snake Bite</h3><ul><li>Stay calm, immobilize limb at heart level.</li><li>Mark swelling edge with pen, note time every 15min.</li><li>Remove rings/watches near bite.</li><li><span class="danger">DO NOT</span>: cut/suck, tourniquet, ice, alcohol, electric shock.</li><li>Get to hospital—antivenin is only effective treatment.</li><li>Remember snake appearance (don't chase/kill).</li><li><strong>Pressure immobilization</strong> for neurotoxic snakes (Australia, mambas): wrap entire limb firmly, splint. NOT for pit vipers (rattlesnakes).</li></ul>
+<h3>Wound Care</h3><ul><li><strong>Irrigation</strong>: Clean water under pressure (bag with pinhole).</li><li><strong>Closure</strong>: Butterfly strips for clean cuts; leave punctures open.</li><li><strong>Dressing</strong>: Non-stick pad + gauze + tape. Change daily, inspect for infection.</li><li><strong>Infection red flags</strong>: Red streaks moving up limb (cellulitis), pus, fever, worsening pain—evacuate.</li></ul>
+<h3>Altitude Sickness</h3><ul><li><strong>AMS</strong> (above 8000ft): Headache, nausea, fatigue. Treat: rest, hydrate, don't ascend.</li><li><strong>HAPE/HACE</strong> (fluid in lungs/brain): Cough, confusion, ataxia. <span class="danger">DESCEND IMMEDIATELY</span>—these kill.</li><li><strong>Golden rule</strong>: Never ascend with symptoms. Acclimatize: ascend slowly, rest days.</li></ul>
+<h3>Eye Injuries</h3><ul><li><strong>Foreign body</strong>: Don't rub. Flush with clean water. If embedded, shield eye, evacuate.</li><li><strong>Snow blindness</strong>: Pain, tearing, gritty feeling. Rest in dark, cool compresses. Prevention: improvised sunglasses (bark/cardboard with narrow slits).</li></ul>
+<h3>Allergic Reaction / Anaphylaxis</h3><ul><li><strong>Recognize</strong>: Hives, swelling throat/lips, difficulty breathing, dizziness.</li><li><strong>Epinephrine</strong>: Use auto-injector if available (thigh, hold 10sec).</li><li><strong>Position</strong>: Sitting if breathing issues; lying down with legs elevated if faint/low BP.</li><li><strong>Evacuate</strong>: Even if symptoms improve—biphasic reaction possible.</li></ul>
+</div></div></section>
+
+<!-- SECTION 7: Weather Reading -->
+<section id="weather"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1469474968028-56623e02e42e?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>Reading the Sky</h2>
+<div class="card">
+<p><strong>Weather matters more in the field</strong>. A storm can turn a minor issue into a life-threatening situation.</p>
+<h3>Lightning Safety</h3><p><strong>30-30 Rule</strong>: If flash-to-thunder ≤30 seconds (<6 miles), shelter immediately. Wait 30 minutes after last thunder before resuming.</p><p><strong>If caught in open</strong>: Crouch low, feet together, minimize ground contact. Avoid trees, ridges, caves, water. Remove metal frame pack.</p>
+<h3>Cloud Types & Meaning</h3><ul><li><strong>Cumulus</strong> (puffy, cotton): Fair weather if small/scattered.</li><li><strong>Cumulonimbus</strong> (anvil top, towering): Thunderstorm imminent—seek shelter.</li><li><strong>Cirrus</strong> (wispy, high): Weather change in 24-48 hours.</li><li><strong>Stratus</strong> (flat, grey layer): Persistent rain/drizzle likely.</li><li><strong>Altocumulus</strong> ("mackerel sky"): Thunderstorms possible by afternoon.</li><li><strong>Lenticular</strong> (lens over mountain): Extremely high winds aloft—avoid ridges.</li></ul>
+<h3>Wind Signs</h3><ul><li>Increasing wind = increasing storm intensity.</li><li><strong>Backing</strong> (counterclockwise shift): Worsening weather (N hemisphere).</li><li><strong>Veering</strong> (clockwise shift): Improving weather.</li><li><strong>Read wind</strong>: Wet finger (cool side = wind direction), throw grass/dirt.</li></ul>
+<h3>Pressure Signs (No Barometer)</h3><ul><li>Aching joints/old injuries = dropping pressure (storm coming).</li><li>Campfire smoke swirling/descending = low pressure.</li><li>Sounds travel farther = high humidity, low pressure.</li><li>Stronger vegetation smell = humidity/rain approaching.</li></ul>
+<h3>Animal Behavior</h3><ul><li>Cattle/sheep lying down = rain coming (avoid wet grass).</li><li>Swallows flying low = insects low due to pressure drop.</li><li>Frogs louder = high humidity, rain imminent.</li><li>Ants building mound walls = rain coming.</li><li>Bees staying near hive = storm imminent.</li></ul>
+<h3>Red Sky Rules</h3><ul><li><strong>"Red sky at night, shepherd's delight"</strong>: High pressure moving in from west = fair weather.</li><li><strong>"Red sky in morning, shepherd's warning"</strong>: Moisture in eastern sky, system moving in = storm likely.</li></ul>
+<h3>Temperature & Dew Point</h3><p><strong>Dew forms</strong> when temperature drops to dew point. Heavy morning dew = fair day likely (clear night = no cloud insulation). Frost risk: if night is clear/calm, temperature can drop 10-20°F below evening reading.</p>
+</div></div></section>
+
+<!-- SECTION 8: Solar Panel Optimizer -->
+<section id="solar"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>Solar Panel Optimizer</h2>
+<div class="card">
+<p>Optimize solar panel tilt/azimuth for maximum energy capture in the field.</p>
+<div class="solar-calculator">
+<div class="solar-inputs">
+<label>Location: <select id="solar-location"><option value="auto">📍 Auto-detect (Geolocation)</option><option value="manual">✏️ Manual Lat/Lon</option><option value="tropical">🌴 Tropical (0-23.5°)</option><option value="mid" selected>🏔️ Mid-Latitude (23.5-66.5°)</option><option value="polar">❄️ Polar (66.5-90°)</option></select></label>
+<div id="solar-manual" class="hidden"><label>Latitude: <input type="number" id="solar-lat" min="-90" max="90" value="45"></label><label>Longitude: <input type="number" id="solar-lon" min="-180" max="180" value="-122"></label></div>
+<label>Date: <input type="date" id="solar-date"></label>
+<label>Panel Type: <select id="solar-type"><option value="fixed">Fixed Mount</option><option value="adjustable">Adjustable</option></select></label>
+</div>
+<div class="solar-output">
+<p>Optimal Tilt: <span class="value" id="solar-tilt">--</span>° from horizontal</p>
+<p>Face Direction: <span class="value" id="solar-azimuth">--</span> (True South N-hemisphere)</p>
+<p>Peak Sun Hours: <span class="value" id="solar-hours">--</span> hrs</p>
+<p>Season: <span class="value" id="solar-season">--</span></p>
+<p class="label" id="solar-adjust">Adjustment: --</p>
+</div>
+<svg class="solar-diagram" id="solar-svg" viewBox="0 0 400 300">
+<defs><style>.panel{fill:var(--accent2);stroke:var(--accent);stroke-width:2}.ground{stroke:var(--text);stroke-width:2;fill:none}.sun{fill:var(--gold)}.arc{stroke:var(--info);stroke-width:2;fill:none;stroke-dasharray:4}.angle{stroke:var(--gold);stroke-width:2;fill:none}</style></defs>
+<line class="ground" x1="0" y1="250" x2="400" y2="250"/>
+<rect class="panel" id="solar-panel" x="150" y="200" width="100" height="20" rx="2" transform="rotate(-45 200 210)"/>
+<circle class="sun" cx="200" cy="80" r="20"/><path class="arc" d="M100,250 A100,100 0 0 1 300,250"/>
+<path class="angle" d="M200,250 L230,220 A30,30 0 0 1 200,250"/><text x="240" y="220" fill="var(--gold)" font-size="14" id="angle-label">45°</text>
+</svg>
+<details><summary>How this is calculated</summary>
+<p><strong>Declination</strong>: d = 23.45 × sin(360/365 × (284 + dayOfYear))</p>
+<p><strong>Optimal tilt (fixed)</strong>: |latitude - declination|, clamped 0-90°</p>
+<p><strong>Peak sun hours</strong>: Approximate lookup by latitude band and season</p>
+<p><strong>Azimuth</strong>: True south (N hemisphere) / True north (S hemisphere) for max daily collection</p>
+</details>
+</div>
+<h3>Practical Tips</h3><ul><li><strong>Clean panels daily</strong> in dusty conditions—massive efficiency difference.</li><li><strong>Partial shade</strong> on one cell affects whole panel—avoid shadows.</li><li><strong>Morning frost</strong>: Wait for melt; don't wipe (scratches coating).</li><li><strong>Angle matters</strong>: 10° off optimal = 5-15% loss depending on season.</li><li><strong>Wiring</strong>: Series = higher voltage; parallel = higher current. Match to charge controller.</li><li><strong>"100W panel" reality</strong>: Rated at STC (25°C, 1000W/m²). Real-world: 70-85W typical due to angle, temperature, losses.</li></ul>
+</div></div></section>
+
+<!-- SECTION 9: Adventure Pack List -->
+<section id="packlist"><div class="hero" style="background-image:url('https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=1400&q=80&fit=crop')"></div><div class="container hero-content">
+<h2><svg viewBox="0 0 24 24" style="width:24px;height:24px;vertical-align:middle;fill:var(--accent);margin-right:8px"><path d="M17 4h-3V2h-4v2H7v18h10V4zm-5 15c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3-9H9V4h6v6z"/></svg>What to Always Bring</h2>
+<div class="card">
+<p>The <strong>10 Essentials</strong> updated for modern adventurers. These aren't optional—they're the difference between an inconvenience and a tragedy.</p>
+<div class="pack-actions"><button id="pack-print">🖨️ Print Checklist</button><button id="pack-reset" class="secondary">↺ Reset All</button><span class="pack-count"><span id="pack-checked">0</span> of <span id="pack-total">0</span> checked</span></div>
+<ul class="pack-list" id="pack-list">
+<li class="pack-category"><h4>Navigation</h4><ul><li class="pack-item"><input type="checkbox" id="p1"><label for="p1">Topographic map (printed, waterproofed)</label></li><li class="pack-item"><input type="checkbox" id="p2"><label for="p2">Compass (baseplate, no batteries)</label></li><li class="pack-item"><input type="checkbox" id="p3"><label for="p3">GPS/phone with offline maps</label></li><li class="pack-item"><input type="checkbox" id="p4"><label for="p4">Extra batteries/power bank</label></li></ul></li>
+<li class="pack-category"><h4>Fire</h4><ul><li class="pack-item"><input type="checkbox" id="p5"><label for="p5">Lighter ×2 (different pockets)</label></li><li class="pack-item"><input type="checkbox" id="p6"><label for="p6">Ferro rod with striker</label></li><li class="pack-item"><input type="checkbox" id="p7"><label for="p7">Waterproof matches in sealed container</label></li><li class="pack-item"><input type="checkbox" id="p8"><label for="p8">Fire tinder (char cloth/commercial)</label></li></ul></li>
+<li class="pack-category"><h4>Shelter</h4><ul><li class="pack-item"><input type="checkbox" id="p9"><label for="p9">Emergency bivy/space blanket</label></li><li class="pack-item"><input type="checkbox" id="p10"><label for="p10">Tarp (8×10 min) with guylines</label></li><li class="pack-item"><input type="checkbox" id="p11"><label for="p11">50+ feet paracord</label></li></ul></li>
+<li class="pack-category"><h4>Water</h4><ul><li class="pack-item"><input type="checkbox" id="p12"><label for="p12">Water filter (Sawyer Squeeze or similar)</label></li><li class="pack-item"><input type="checkbox" id="p13"><label for="p13">Chemical purification tablets (backup)</label></li><li class="pack-item"><input type="checkbox" id="p14"><label for="p14">Metal container (boilable)</label></li><li class="pack-item"><input type="checkbox" id="p15"><label for="p15">2L water capacity minimum</label></li></ul></li>
+<li class="pack-category"><h4>First Aid</h4><ul><li class="pack-item"><input type="checkbox" id="p16"><label for="p16">Tourniquet (CAT/SOFTT-W)</label></li><li class="pack-item"><input type="checkbox" id="p17"><label for="p17">Hemostatic gauze</label></li><li class="pack-item"><input type="checkbox" id="p18"><label for="p18">Wound closure strips</label></li><li class="pack-item"><input type="checkbox" id="p19"><label for="p19">Medical tape + SAM splint</label></li><li class="pack-item"><input type="checkbox" id="p20"><label for="p20">Pain reliever, antihistamine, antidiarrheal</label></li><li class="pack-item"><input type="checkbox" id="p21"><label for="p21">Blister treatment (moleskin)</label></li><li class="pack-item"><input type="checkbox" id="p22"><label for="p22">Nitrile gloves ×2 pairs + CPR shield</label></li><li class="pack-item"><input type="checkbox" id="p23"><label for="p23">Personal prescription medications</label></li></ul></li>
+<li class="pack-category"><h4>Light</h4><ul><li class="pack-item"><input type="checkbox" id="p24"><label for="p24">Headlamp (hands-free)</label></li><li class="pack-item"><input type="checkbox" id="p25"><label for="p25">Extra batteries/spare headlamp</label></li><li class="pack-item"><input type="checkbox" id="p26"><label for="p26">Small backup flashlight</label></li></ul></li>
+<li class="pack-category"><h4>Tools</h4><ul><li class="pack-item"><input type="checkbox" id="p27"><label for="p27">Fixed blade knife (primary)</label></li><li class="pack-item"><input type="checkbox" id="p28"><label for="p28">Multi-tool (screwdrivers, pliers, saw)</label></li><li class="pack-item"><input type="checkbox" id="p29"><label for="p29">Duct tape (wrapped around water bottle)</label></li></ul></li>
+<li class="pack-category"><h4>Food</h4><ul><li class="pack-item"><input type="checkbox" id="p30"><label for="p30">2000+ cal emergency food/day + 1 extra day</label></li><li class="pack-item"><input type="checkbox" id="p31"><label for="p31">High-calorie, no-cook options (nuts, jerky, bars)</label></li><li class="pack-item"><input type="checkbox" id="p32"><label for="p32">Camp stove + fuel (extended trips)</label></li></ul></li>
+<li class="pack-category"><h4>Communication</h4><ul><li class="pack-item"><input type="checkbox" id="p33"><label for="p33">Whistle (pealess, Fox 40 style)</label></li><li class="pack-item"><input type="checkbox" id="p34"><label for="p34">Signal mirror</label></li><li class="pack-item"><input type="checkbox" id="p35"><label for="p35">Satellite communicator (inReach/SPOT)</label></li><li class="pack-item"><input type="checkbox" id="p36"><label for="p36">Charged phone with offline emergency contacts</label></li></ul></li>
+<li class="pack-category"><h4>Sun & Cold</h4><ul><li class="pack-item"><input type="checkbox" id="p37"><label for="p37">Sunscreen SPF 30+</label></li><li class="pack-item"><input type="checkbox" id="p38"><label for="p38">Sunglasses (UV protection)</label></li><li class="pack-item"><input type="checkbox" id="p39"><label for="p39">Hat (brim for sun, warm for cold)</label></li><li class="pack-item"><input type="checkbox" id="p40"><label for="p40">Rain jacket (also wind protection)</label></li><li class="pack-item"><input type="checkbox" id="p41"><label for="p41">Insulation layer (synthetic/down)</label></li><li class="pack-item"><input type="checkbox" id="p42"><label for="p42">Gloves (even summer at altitude)</label></li></ul></li>
+<li class="pack-category"><h4>Trip Admin</h4><ul><li class="pack-item"><input type="checkbox" id="p43"><label for="p43">Leave trip plan with contact: route, return time, who to call</label></li><li class="pack-item"><input type="checkbox" id="p44"><label for="p44">Emergency contact card in pack</label></li><li class="pack-item"><input type="checkbox" id="p45"><label for="p45">Cash (small bills)</label></li><li class="pack-item"><input type="checkbox" id="p46"><label for="p46">Copies of ID</label></li></ul></li>
+</ul>
+</div></div></section>
+
+</main>
+<footer>
+<div class="container">
+<p><strong>Survive</strong> — Knowledge is the ultimate survival tool</p>
+<p class="label">Disclaimer: This guide is for educational purposes. Always get proper training before relying on these techniques. Conditions vary—use your judgment.</p>
+<p class="label">Photography by Unsplash contributors</p>
+<div class="pwa-prompt" id="pwa-prompt"><p><strong>📱 Add to Home Screen</strong> for offline access to this survival guide.</p></div>
+</div>
+</footer>
+
+<script>
+// ===== STATE (in-memory only, no localStorage) =====
+const state = { theme: 'dark', compassAngle: 0, morseAudio: null, packChecked: {} };
+
+// ===== DOM READY =====
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme(); initNav(); initSearch(); initProgress(); initCompass(); initMorse(); initSolar(); initPackList(); initPWA(); registerSW();
+});
+
+// ===== THEME TOGGLE =====
+function initTheme() {
+  const btn = document.getElementById('theme-toggle'), icon = document.getElementById('theme-icon');
+  const toggle = () => {
+    document.body.classList.toggle('light');
+    state.theme = document.body.classList.contains('light') ? 'light' : 'dark';
+    icon.innerHTML = state.theme === 'light' 
+      ? '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>'
+      : '<path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>';
+  };
+  btn.addEventListener('click', toggle);
+}
+
+// ===== NAVIGATION =====
+function initNav() {
+  const menuBtn = document.getElementById('menu-toggle'), navLinks = document.getElementById('nav-links');
+  menuBtn.addEventListener('click', () => navLinks.classList.toggle('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => { navLinks.classList.remove('active'); document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active')); a.classList.add('active'); });
+  });
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', e => {
+      e.preventDefault(); const target = document.querySelector(anchor.getAttribute('href'));
+      if (target) { const headerOffset = 70; const elementPosition = target.getBoundingClientRect().top; const offsetPosition = elementPosition + window.pageYOffset - headerOffset; window.scrollTo({ top: offsetPosition, behavior: 'smooth' }); }
+    });
+  });
+}
+
+// ===== SEARCH =====
+function initSearch() {
+  const btn = document.getElementById('search-btn'), overlay = document.getElementById('search-overlay'), input = document.getElementById('search-input'), results = document.getElementById('search-results');
+  btn.addEventListener('click', () => { overlay.classList.add('active'); input.focus(); });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); overlay.classList.add('active'); input.focus(); } if (e.key === 'Escape') { overlay.classList.remove('active'); input.blur(); } });
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim(); results.innerHTML = ''; if (q.length < 2) return;
+    const sections = document.querySelectorAll('section'); let found = 0;
+    sections.forEach(sec => { const text = sec.textContent.toLowerCase(); if (text.includes(q)) { found++; const div = document.createElement('div'); div.className = 'search-result'; const title = sec.querySelector('h2')?.textContent || sec.id; div.innerHTML = `<strong>${highlight(title, q)}</strong><br><small>${sec.id.replace('-', ' ').toUpperCase()}</small>`; div.addEventListener('click', () => { overlay.classList.remove('active'); sec.scrollIntoView({ behavior: 'smooth' }); }); results.appendChild(div); } });
+    if (found === 0) results.innerHTML = '<div class="search-result">No results found</div>';
+  });
+  function highlight(text, query) { return text.replace(new RegExp(`(${query})`, 'gi'), '<mark>$1</mark>'); }
+}
+
+// ===== PROGRESS BAR =====
+function initProgress() { const bar = document.getElementById('progress'); window.addEventListener('scroll', () => { const h = document.documentElement; const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100; bar.style.width = `${scrolled}%`; }); }
+
+// ===== COMPASS TRAINER =====
+function initCompass() {
+  const svg = document.getElementById('compass'), rose = document.getElementById('compass-rose'), bearing = document.getElementById('bearing-display'), input = document.getElementById('bearing-input'), travel = document.getElementById('travel-arrow');
+  let isDragging = false, startAngle = 0, currentAngle = 0;
+  function setAngle(deg) { currentAngle = ((deg % 360) + 360) % 360; rose.setAttribute('transform', `rotate(${currentAngle} 140 140)`); bearing.textContent = `${Math.round(currentAngle)}°`; input.value = Math.round(currentAngle); travel.setAttribute('transform', `rotate(${currentAngle} 140 140)`); }
+  const presets = { 'btn-n': 0, 'btn-ne': 45, 'btn-e': 90, 'btn-se': 135, 'btn-s': 180, 'btn-sw': 225, 'btn-w': 270, 'btn-nw': 315 };
+  Object.entries(presets).forEach(([id, deg]) => { document.getElementById(id).addEventListener('click', () => setAngle(deg)); });
+  input.addEventListener('change', () => { const val = parseFloat(input.value); if (!isNaN(val)) setAngle(val); });
+  function getAngleFromEvent(e) { const rect = svg.getBoundingClientRect(); const cx = rect.left + 140, cy = rect.top + 140; const x = (e.touches ? e.touches[0].clientX : e.clientX) - cx; const y = (e.touches ? e.touches[0].clientY : e.clientY) - cy; return Math.atan2(y, x) * 180 / Math.PI + 90; }
+  svg.addEventListener('mousedown', e => { isDragging = true; startAngle = currentAngle - getAngleFromEvent(e); e.preventDefault(); });
+  svg.addEventListener('touchstart', e => { isDragging = true; startAngle = currentAngle - getAngleFromEvent(e); e.preventDefault(); }, { passive: false });
+  window.addEventListener('mousemove', e => { if (isDragging) setAngle(startAngle + getAngleFromEvent(e)); });
+  window.addEventListener('touchmove', e => { if (isDragging) setAngle(startAngle + getAngleFromEvent(e)); e.preventDefault(); }, { passive: false });
+  window.addEventListener('mouseup', () => isDragging = false); window.addEventListener('touchend', () => isDragging = false);
+  document.getElementById('btn-practice').addEventListener('click', () => { const target = Math.floor(Math.random() * 360); bearing.textContent = `Match: ${target}°`; const check = () => { if (Math.abs(currentAngle - target) <= 5) { bearing.textContent = `✓ Correct! ${Math.round(currentAngle)}°`; setTimeout(() => setAngle(0), 1500); } }; const interval = setInterval(check, 200); setTimeout(() => clearInterval(interval), 5000); });
+  if (window.DeviceOrientationEvent) { DeviceOrientationEvent.requestPermission?.().then(resp => { if (resp === 'granted') { window.addEventListener('deviceorientation', e => { if (e.webkitCompassHeading !== undefined) { document.getElementById('live-bearing').textContent = Math.round(e.webkitCompassHeading); document.getElementById('live-compass').classList.remove('hidden'); } }); } }).catch(() => {}); }
+}
+
+// ===== MORSE CODE TRAINER (Web Audio API) =====
+function initMorse() {
+  const morseMap = { 'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', ' ': '/' };
+  const input = document.getElementById('morse-input'), display = document.getElementById('morse-display'), speed = document.getElementById('morse-speed'), freq = document.getElementById('morse-freq'), wpmVal = document.getElementById('wpm-val'), freqVal = document.getElementById('freq-val');
+  let audioCtx, isPlaying = false, playbackTimeouts = [];
+  function updateDisplay() { const text = input.value.toUpperCase(); display.innerHTML = text.split('').map(c => `<span data-c="${c}">${morseMap[c] || c}</span>`).join(' '); }
+  input.addEventListener('input', updateDisplay); speed.addEventListener('input', () => wpmVal.textContent = speed.value); freq.addEventListener('input', () => freqVal.textContent = freq.value);
+  function playMorse(text) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (isPlaying) stopMorse(); isPlaying = true;
+    const wpm = parseInt(speed.value), hz = parseInt(freq.value), dit = 1200 / wpm, dah = dit * 3, letterSpace = dit * 3, wordSpace = dit * 7;
+    let time = audioCtx.currentTime + 0.1; const symbols = text.toUpperCase().split('').map(c => morseMap[c] || '').join(' ');
+    for (let i = 0; i < symbols.length; i++) { const sym = symbols[i]; const span = display.querySelector(`span[data-c="${text[i]?.toUpperCase()}"]`);
+      if (sym === '.') { playTone(time, dit/1000, hz); if (span) { span.classList.add('active'); playbackTimeouts.push(setTimeout(() => span.classList.remove('active'), dit)); } time += dit/1000 + 0.005; }
+      else if (sym === '-') { playTone(time, dah/1000, hz); if (span) { span.classList.add('active'); playbackTimeouts.push(setTimeout(() => span.classList.remove('active'), dah)); } time += dah/1000 + 0.005; }
+      else if (sym === '/') { time += wordSpace/1000; } else if (sym === ' ') { time += letterSpace/1000; }
+    }
+    playbackTimeouts.push(setTimeout(() => { isPlaying = false; }, (time - audioCtx.currentTime) * 1000 + 100));
+  }
+  function playTone(start, duration, frequency) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = frequency; gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(0.3, start + 0.005); gain.gain.setValueAtTime(0.3, start + duration - 0.005); gain.gain.linearRampToValueAtTime(0, start + duration); osc.start(start); osc.stop(start + duration); }
+  function stopMorse() { playbackTimeouts.forEach(clearTimeout); playbackTimeouts = []; isPlaying = false; display.querySelectorAll('span').forEach(s => s.classList.remove('active')); }
+  document.getElementById('morse-play').addEventListener('click', () => playMorse(input.value || 'SOS')); document.getElementById('morse-stop').addEventListener('click', stopMorse); document.getElementById('morse-repeat').addEventListener('click', () => { stopMorse(); setTimeout(() => playMorse(input.value || 'SOS'), 100); });
+  document.querySelectorAll('.morse-phrase').forEach(chip => { chip.addEventListener('click', () => { input.value = chip.dataset.text; updateDisplay(); playMorse(chip.dataset.text); }); });
+  document.querySelectorAll('.morse-table .char').forEach(td => { td.addEventListener('click', () => { const c = td.dataset.char; input.value = c; updateDisplay(); playMorse(c); }); });
+}
+
+// ===== SOLAR CALCULATOR =====
+function initSolar() {
+  const locSel = document.getElementById('solar-location'), manualDiv = document.getElementById('solar-manual'), latInp = document.getElementById('solar-lat'), lonInp = document.getElementById('solar-lon'), dateInp = document.getElementById('solar-date'), typeSel = document.getElementById('solar-type'), tiltOut = document.getElementById('solar-tilt'), azOut = document.getElementById('solar-azimuth'), hrsOut = document.getElementById('solar-hours'), seasonOut = document.getElementById('solar-season'), adjustOut = document.getElementById('solar-adjust'), panel = document.getElementById('solar-panel'), angleLabel = document.getElementById('angle-label');
+  dateInp.valueAsDate = new Date();
+  locSel.addEventListener('change', () => { manualDiv.classList.toggle('hidden', locSel.value !== 'manual'); if (locSel.value === 'auto' && navigator.geolocation) { navigator.geolocation.getCurrentPosition(pos => { latInp.value = pos.coords.latitude.toFixed(2); lonInp.value = pos.coords.longitude.toFixed(2); calculate(); }, () => calculate(), { timeout: 5000 }); } else calculate(); });
+  [latInp, lonInp, dateInp, typeSel].forEach(el => el.addEventListener('change', calculate));
+  function calculate() {
+    let lat = parseFloat(latInp.value) || 45; const date = new Date(dateInp.value || Date.now()); const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+    const declination = 23.45 * Math.sin((360/365) * (284 + dayOfYear) * Math.PI/180);
+    let tilt = Math.abs(lat - declination); tilt = Math.max(0, Math.min(90, tilt));
+    const azimuth = lat >= 0 ? '180° (True South)' : '0° (True North)';
+    const absLat = Math.abs(lat); let hours = absLat < 23.5 ? 5.5 : absLat < 45 ? 4.5 : absLat < 66.5 ? 3.5 : 2.0;
+    const month = date.getMonth(); const isSummer = (lat >= 0 && month >= 4 && month <= 8) || (lat < 0 && (month <= 2 || month >= 10)); hours = isSummer ? hours + 1 : Math.max(1, hours - 1);
+    const seasons = ['Winter', 'Spring', 'Summer', 'Fall']; const seasonIdx = [11,0,1,1,1,2,2,2,3,3,3,0][month]; const season = seasons[seasonIdx];
+    const adjust = typeSel.value === 'adjustable' ? `Tilt ${declination > 0 ? '+' : ''}${Math.round(Math.abs(declination))}° from latitude for today` : `For winter: +15°, summer: -15° from fixed angle`;
+    tiltOut.textContent = Math.round(tilt); azOut.textContent = azimuth; hrsOut.textContent = hours.toFixed(1); seasonOut.textContent = season; adjustOut.textContent = adjust;
+    const rotation = 90 - tilt; panel.setAttribute('transform', `rotate(${rotation} 200 210)`); angleLabel.textContent = `${Math.round(tilt)}°`;
+  }
+  calculate();
+}
+
+// ===== PACK LIST =====
+function initPackList() {
+  const list = document.getElementById('pack-list'), total = document.getElementById('pack-total'), checked = document.getElementById('pack-checked'), items = list.querySelectorAll('input[type="checkbox"]');
+  total.textContent = items.length;
+  function updateCount() { const count = Array.from(items).filter(i => i.checked).length; checked.textContent = count; items.forEach(item => item.closest('.pack-item').classList.toggle('checked', item.checked)); }
+  items.forEach(item => { item.addEventListener('change', updateCount); item.closest('.pack-item').querySelector('label').addEventListener('click', e => { if (e.target.tagName !== 'INPUT') item.checked = !item.checked; updateCount(); }); });
+  document.getElementById('pack-reset').addEventListener('click', () => { items.forEach(i => i.checked = false); updateCount(); });
+  document.getElementById('pack-print').addEventListener('click', () => window.print());
+  updateCount();
+}
+
+// ===== PWA INSTALL PROMPT =====
+function initPWA() {
+  let deferredPrompt; const prompt = document.getElementById('pwa-prompt');
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; setTimeout(() => prompt.classList.add('show'), 3000); });
+  prompt.addEventListener('click', () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(choice => { if (choice.outcome === 'accepted') prompt.classList.remove('show'); deferredPrompt = null; }); } });
+  if (window.matchMedia('(display-mode: standalone)').matches) { prompt.style.display = 'none'; }
+}
+
+// ===== SERVICE WORKER REGISTRATION =====
+function registerSW() { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').then(reg => { console.log('SW registered:', reg.scope); }).catch(err => console.log('SW registration failed:', err)); } }
+</script>
+</body>
+</html>
