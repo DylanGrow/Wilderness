@@ -3,956 +3,531 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<meta name="description" content="Wilderness Survival Guide - Offline PWA">
+<meta name="description" content="Complete wilderness survival guide. Works fully offline. Mindset, shelter, water, navigation, first aid, and signaling.">
 <meta name="theme-color" content="#2d4a1e">
+<meta name="color-scheme" content="dark light">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Wilderness Survival Guide">
+<meta property="og:description" content="Offline-ready PWA with mindset, shelter, water, navigation, and first aid guides.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1200&q=80">
+<meta name="twitter:card" content="summary_large_image">
 <title>Survive - Wilderness Survival Guide</title>
 <link rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%232d4a1e'/%3E%3Cpath d='M50 15 L60 45 L90 50 L60 55 L50 85 L40 55 L10 50 L40 45 Z' fill='%234a7c3f'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23c9a84c'/%3E%3C/svg%3E">
+<link rel="canonical" href="/">
+<link rel="icon" type="image/svg+xml" href="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%232d4a1e'/%3E%3Cpath d='M50 15 L60 45 L90 50 L60 55 L50 85 L40 55 L10 50 L40 45 Z' fill='%234a7c3f'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23c9a84c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
 
 <style>
-/* ===== CSS VARIABLES ===== */
-:root{
-  --bg:#0f1410;
-  --bg2:#1a2318;
-  --bg3:#243020;
-  --accent:#4a7c3f;
-  --accent2:#6fa85e;
-  --gold:#c9a84c;
-  --text:#e8e4d8;
-  --text2:#a09b8c;
-  --danger:#c0392b;
-  --info:#3a7bd5;
-  --shadow:0 4px 20px rgba(0,0,0,.4);
-  --transition:all .3s ease
-}
-
-body.light{
-  --bg:#f0ede4;
-  --bg2:#fff;
-  --bg3:#e8e4d8;
-  --text:#1a1a1a;
-  --text2:#5a5a5a;
-  --shadow:0 4px 20px rgba(0,0,0,.1)
-}
-
-/* ===== BASE STYLES ===== */
+:root{--bg:#0f1410;--bg2:#1a2318;--bg3:#243020;--accent:#4a7c3f;--accent2:#6fa85e;--gold:#c9a84c;--text:#e8e4d8;--text2:#a09b8c;--danger:#c0392b;--info:#3a7bd5;--shadow:0 4px 20px rgba(0,0,0,.4)}
+body.light{--bg:#f0ede4;--bg2:#fff;--bg3:#e8e4d8;--text:#1a1a1a;--text2:#5a5a5a;--shadow:0 4px 20px rgba(0,0,0,.1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
-body{
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-  font-size:16px;
-  line-height:1.7;
-  color:var(--text);
-  background:var(--bg);
-  transition:var(--transition);
-  overflow-x:hidden
-}
-
-/* ===== TYPOGRAPHY ===== */
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);transition:background .3s,color .3s;overflow-x:hidden}
 h1,h2,h3,h4{font-weight:600;letter-spacing:-.02em;line-height:1.3;margin-bottom:1rem}
-h1{font-size:2.5rem}
-h2{font-size:2rem;color:var(--accent)}
-h3{font-size:1.5rem;color:var(--accent2);margin-top:2rem}
-h4{font-size:1.2rem;color:var(--gold)}
+h1{font-size:2.5rem}h2{font-size:2rem;color:var(--accent)}h3{font-size:1.5rem;color:var(--accent2);margin-top:2rem}h4{font-size:1.2rem;color:var(--gold)}
 p{margin-bottom:1rem}
 small,.label{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)}
 strong,b{color:var(--accent2);font-weight:600}
-.danger{color:var(--danger);font-weight:600}
-.info{color:var(--info)}
-
-/* ===== LAYOUT ===== */
+.danger{color:var(--danger);font-weight:600}.info{color:var(--info)}
 .container{max-width:900px;margin:0 auto;padding:0 20px}
 section{padding:80px 0 60px;position:relative}
-
-/* ===== MOBILE STYLES ===== */
-@media(max-width:768px){
-  section{padding:60px 0 40px}
-  h1{font-size:1.75rem}
-  h2{font-size:1.5rem}
-  h3{font-size:1.25rem}
-  .container{padding:0 16px}
-}
-
-/* ===== PROGRESS BAR ===== */
-#progress{
-  position:fixed;
-  top:0;
-  left:0;
-  height:3px;
-  background:var(--accent);
-  width:0;
-  z-index:1001;
-  transition:width .1s ease
-}
-
-/* ===== HEADER ===== */
-header{
-  position:sticky;
-  top:0;
-  z-index:999;
-  background:var(--bg);
-  border-bottom:1px solid var(--bg3);
-  padding:12px 0;
-  transition:var(--transition)
-}
+@media(max-width:768px){section{padding:60px 0 40px}h1{font-size:1.75rem}h2{font-size:1.5rem}h3{font-size:1.25rem}.container{padding:0 16px}}
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:1001;transition:width .1s ease}
+.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:10000}.skip-link:focus{left:10px;top:10px;width:auto;height:auto;padding:1rem;background:var(--accent);color:var(--bg);border-radius:8px;font-weight:600}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+header{position:sticky;top:0;z-index:999;background:var(--bg);border-bottom:1px solid var(--bg3);padding:12px 0}
 .header-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.logo{
-  display:flex;
-  align-items:center;
-  gap:.5rem;
-  font-weight:600;
-  color:var(--text);
-  text-decoration:none;
-  font-size:1.1rem
-}
+.logo{display:flex;align-items:center;gap:.5rem;font-weight:600;color:var(--text);text-decoration:none;font-size:1.1rem}
 .logo svg{width:28px;height:28px;fill:var(--accent)}
-
-/* ===== NAVIGATION ===== */
 nav{display:flex;align-items:center;gap:1rem}
 .nav-links{display:flex;list-style:none;gap:.25rem}
-.nav-links a{
-  color:var(--text2);
-  text-decoration:none;
-  padding:.5rem .6rem;
-  font-size:.85rem;
-  transition:var(--transition);
-  border-radius:6px
-}
-.nav-links a:hover,.nav-links a.active{
-  color:var(--accent);
-  background:var(--bg3)
-}
+.nav-links a{color:var(--text2);text-decoration:none;padding:.5rem .6rem;font-size:.85rem;transition:all .2s;border-radius:6px}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:var(--bg3)}
 .header-actions{display:flex;align-items:center;gap:.25rem}
-.btn-icon{
-  background:none;
-  border:none;
-  color:var(--text);
-  cursor:pointer;
-  padding:.5rem;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:8px;
-  transition:var(--transition);
-  touch-action:manipulation
-}
+.btn-icon{background:none;border:none;color:var(--text);cursor:pointer;padding:.5rem;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all .2s;touch-action:manipulation}
 .btn-icon:hover{background:var(--bg3);color:var(--accent)}
 .btn-icon svg{width:22px;height:22px;fill:currentColor}
 #menu-toggle{display:none}
-
-/* ===== MOBILE NAV ===== */
-@media(max-width:900px){
-  .nav-links{
-    position:fixed;
-    top:60px;
-    left:0;
-    right:0;
-    background:var(--bg);
-    flex-direction:column;
-    padding:1rem;
-    border-bottom:1px solid var(--bg3);
-    display:none;
-    gap:0;
-    z-index:998
-  }
-  .nav-links.active{display:flex}
-  .nav-links a{padding:1rem;font-size:1rem;border-radius:0}
-  #menu-toggle{display:flex}
-}
-
-/* ===== SEARCH OVERLAY ===== */
-#search-overlay{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  background:var(--bg);
-  padding:1rem 20px;
-  z-index:1000;
-  display:none;
-  border-bottom:1px solid var(--bg3);
-  max-height:100vh;
-  overflow-y:auto
-}
-#search-overlay.active{display:block}
-.search-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
-#search-input{
-  flex:1;
-  padding:.75rem 1rem;
-  background:var(--bg2);
-  border:1px solid var(--bg3);
-  border-radius:8px;
-  color:var(--text);
-  font-size:1rem
-}
-#search-input:focus{outline:2px solid var(--accent)}
-#search-close{
-  background:var(--bg3);
-  border:none;
-  color:var(--text);
-  padding:.5rem 1rem;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:.9rem
-}
+@media(max-width:900px){.nav-links{position:fixed;top:61px;left:0;right:0;background:var(--bg);flex-direction:column;padding:0;border-bottom:1px solid var(--bg3);display:none;gap:0;z-index:998;max-height:calc(100vh - 61px);overflow-y:auto;transform:translateY(-10px);opacity:0;transition:transform .2s,opacity .2s}.nav-links.active{display:flex;transform:translateY(0);opacity:1}.nav-links li{width:100%}.nav-links a{padding:1.2rem 1.5rem;font-size:1.1rem;border-radius:0;border-bottom:1px solid var(--bg3)}#menu-toggle{display:flex}}
+#search-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:1000;display:none;padding:20px;transition:opacity .2s}.#search-overlay.active{display:block}
+.search-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
+#search-input{flex:1;padding:1rem;font-size:1.2rem;background:var(--bg2);border:2px solid var(--accent);border-radius:8px;color:var(--text)}
+#search-input:focus{outline:none;border-color:var(--accent2)}
+#search-close{padding:1rem 2rem;background:var(--danger);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:1rem;touch-action:manipulation}
 #search-results{margin-top:1rem;max-height:60vh;overflow-y:auto}
-.search-result{
-  padding:1rem;
-  border-bottom:1px solid var(--bg3);
-  cursor:pointer;
-  transition:var(--transition)
-}
+.search-result{padding:1rem;border-bottom:1px solid var(--bg3);cursor:pointer;transition:background .2s}
 .search-result:hover{background:var(--bg3)}
-.search-result mark{
-  background:var(--gold);
-  color:var(--bg);
-  padding:0 2px;
-  border-radius:2px
-}
-
-/* ===== HERO SECTION ===== */
-.hero{
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:100%;
-  background-size:cover;
-  background-position:center;
-  z-index:-1
-}
-.hero::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to bottom,rgba(15,20,16,.7),rgba(15,20,16,.95))
-}
+.search-result mark{background:var(--gold);color:var(--bg);padding:0 2px;border-radius:2px}
+.hero{position:absolute;top:0;left:0;right:0;aspect-ratio:16/9;background-size:cover;background-position:center;z-index:-1}
+@media(max-width:768px){.hero{aspect-ratio:4/3}}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,20,16,.7),rgba(15,20,16,.95))}
 .hero-content{position:relative;z-index:1;color:var(--text)}
-
-/* ===== CARDS ===== */
-.card{
-  background:var(--bg2);
-  border-radius:12px;
-  padding:1.5rem;
-  margin:1.5rem 0;
-  box-shadow:var(--shadow)
-}
+.card{background:var(--bg2);border-radius:12px;padding:1.5rem;margin:1.5rem 0;box-shadow:var(--shadow)}
 @media(max-width:768px){.card{padding:1.25rem}}
-
-/* ===== DIAGRAMS & INFOGRAPHICS ===== */
-.diagram,.infographic{
-  width:100%;
-  max-width:500px;
-  margin:1.5rem auto;
-  display:block
-}
-.diagram svg,.infographic svg{width:100%;height:auto}
-
-/* ===== FOOTER ===== */
-footer{
-  background:var(--bg2);
-  padding:3rem 0;
-  text-align:center;
-  border-top:1px solid var(--bg3);
-  margin-top:2rem
-}
+section:nth-child(n+3){content-visibility:auto;contain-intrinsic-size:0 800px}
+.compass-wrapper,.morse-wrapper,.solar-wrapper,.pack-wrapper{background:var(--bg2);border-radius:12px;padding:1.5rem;margin:1.5rem 0}
+.compass-main{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.compass-svg{width:200px;height:200px;touch-action:none}
+.compass-controls{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+.compass-controls input{width:70px;padding:.5rem;background:var(--bg3);border:1px solid var(--accent);border-radius:6px;color:var(--text);text-align:center}
+.compass-controls button{padding:.5rem 1rem;background:var(--accent);color:var(--bg);border:none;border-radius:6px;cursor:pointer;font-weight:500;touch-action:manipulation}
+.compass-bearing{font-size:2rem;font-weight:600;color:var(--gold)}
+.morse-input{width:100%;padding:.75rem;background:var(--bg3);border:1px solid var(--bg3);border-radius:8px;color:var(--text);font-size:1rem;margin-bottom:1rem}
+.morse-display{font-family:monospace;font-size:1.25rem;letter-spacing:.2em;padding:1rem;background:var(--bg3);border-radius:8px;min-height:3.5rem;text-align:center;word-break:break-all;line-height:2}
+.morse-display span.active{color:var(--gold);background:rgba(201,168,76,.2);padding:0 4px;border-radius:4px}
+.morse-controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin:1rem 0}
+.morse-controls label{display:flex;flex-direction:column;gap:.25rem;font-size:.85rem}
+.morse-controls input[type="range"]{width:120px;accent-color:var(--accent)}
+.morse-controls button{padding:.6rem 1.2rem;background:var(--accent);color:var(--bg);border:none;border-radius:6px;cursor:pointer;font-weight:500;touch-action:manipulation}
+.morse-controls button.stop{background:var(--danger)}
+.morse-phrases{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+.morse-phrase{padding:.5rem 1rem;background:var(--bg3);border-radius:20px;cursor:pointer;transition:all .2s;touch-action:manipulation}
+.morse-phrase:hover{background:var(--accent);color:var(--bg)}
+.morse-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+.morse-table td{padding:.5rem;border:1px solid var(--bg3);text-align:center}
+.morse-table .char{font-weight:600;color:var(--accent2);cursor:pointer;touch-action:manipulation}
+.morse-table .code{font-family:monospace;color:var(--gold);letter-spacing:.1em}
+.solar-quick{margin-bottom:1.5rem}
+.solar-quick label{display:flex;flex-direction:column;gap:.3rem;font-size:.9rem}
+.solar-quick select{padding:.6rem;background:var(--bg3);border:1px solid var(--bg3);border-radius:6px;color:var(--text);font-size:1rem}
+.solar-result{background:var(--bg3);border-radius:8px;padding:1.25rem}
+.solar-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.solar-result-item{text-align:center}
+.solar-result-item .value{font-size:2.5rem;font-weight:600;color:var(--gold);display:block;line-height:1}
+.solar-result-item .label{font-size:.8rem;margin-top:.25rem;display:block}
+.solar-diagram{width:100%;max-width:350px;margin:1rem auto}
+.solar-tips{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--bg3)}
+.solar-tips ul{margin-left:1.25rem}.solar-tips li{margin:.5rem 0}
+.cloud-grid,.signal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin:1rem 0}
+.cloud-item,.signal-item{background:var(--bg3);border-radius:8px;padding:1rem;text-align:center}
+.cloud-item svg,.signal-item svg{width:100%;height:80px;margin-bottom:.5rem}
+.cloud-item .name,.signal-item .code{font-weight:600;color:var(--accent2);font-size:.9rem}
+.cloud-item .desc{font-size:.8rem;color:var(--text2);margin-top:.25rem}
+.signal-item .code{font-size:1.5rem;color:var(--gold);margin:.25rem 0}
+.signal-item .meaning{font-size:.85rem;color:var(--text2)}
+.pack-actions{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap}
+.pack-actions button{padding:.6rem 1rem;background:var(--accent);color:var(--bg);border:none;border-radius:6px;cursor:pointer;font-weight:500;touch-action:manipulation}
+.pack-actions button.secondary{background:var(--bg3);color:var(--text)}
+.pack-count{font-weight:600;color:var(--gold);margin-left:auto;padding:.6rem}
+.pack-list{list-style:none}
+.pack-category{margin:1.5rem 0}
+.pack-category h4{border-bottom:2px solid var(--accent);padding-bottom:.5rem;margin-bottom:1rem}
+.pack-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--bg3)}
+.pack-item:last-child{border-bottom:none}
+.pack-item input[type="checkbox"]{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);cursor:pointer;touch-action:manipulation}
+.pack-item label{cursor:pointer;flex:1;font-size:.95rem;line-height:1.4}
+.pack-item.checked label{text-decoration:line-through;opacity:.6}
+footer{background:var(--bg2);padding:3rem 0;text-align:center;border-top:1px solid var(--bg3);margin-top:2rem}
 footer p{margin:.5rem 0;color:var(--text2)}
-
-/* ===== PWA PROMPT ===== */
-.pwa-prompt{
-  display:none;
-  margin-top:1rem;
-  padding:1rem;
-  background:var(--bg3);
-  border-radius:8px
-}
+.pwa-prompt{display:none;margin-top:1rem;padding:1rem;background:var(--bg3);border-radius:8px}
 .pwa-prompt.show{display:block}
-
-/* ===== UTILITY CLASSES ===== */
+#loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loading-overlay.hidden{opacity:0;pointer-events:none}
+.loading-spinner{width:48px;height:48px;border:4px solid var(--bg3);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#sos-btn{position:fixed;bottom:20px;right:20px;background:var(--danger);color:white;border:none;border-radius:50px;padding:12px 20px;font-weight:700;cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 15px rgba(192,57,43,.4);touch-action:manipulation}
+#font-controls{position:fixed;bottom:20px;left:20px;display:flex;gap:4px;z-index:999}
+#font-controls button{background:var(--bg3);color:var(--text);border:1px solid var(--bg);padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:600;touch-action:manipulation}
+#font-controls button.active{background:var(--accent);color:var(--bg)}
+@keyframes flash{50%{background:var(--danger)}}
 .hidden{display:none!important}
 .text-center{text-align:center}
 .mt-2{margin-top:2rem}
 .mb-2{margin-bottom:2rem}
-
-/* ===== PRINT STYLES ===== */
-@media print{
-  header,footer,#search-overlay,.no-print{display:none!important}
-  body{background:#fff;color:#000}
-  section{padding:20px 0;page-break-inside:avoid}
-  .hero{display:none}
-  .card{box-shadow:none;border:1px solid #ccc}
-}
+@media print{header,footer,#search-overlay,.no-print,#loading-overlay,#sos-btn,#font-controls{display:none!important}body{background:#fff;color:#000}section{padding:20px 0;page-break-inside:avoid}.hero{display:none}.card{box-shadow:none;border:1px solid #ccc}}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to main content</a>
 <div id="progress"></div>
+<div id="loading-overlay"><div class="loading-spinner"></div><p>Loading Survival Guide...</p></div>
 
-<!-- Search Overlay -->
-<div id="search-overlay">
+<div id="search-overlay" role="dialog" aria-label="Search">
   <div class="container">
     <div class="search-header">
-      <input type="search" id="search-input" placeholder="Search survival guides..." autocomplete="off">
-      <button id="search-close">✕ Close</button>
+      <input type="search" id="search-input" placeholder="Search survival guides..." autocomplete="off" aria-label="Search">
+      <button id="search-close" aria-label="Close search">✕ Close</button>
     </div>
-    <div id="search-results"></div>
+    <div id="search-results" aria-live="polite" aria-atomic="true"></div>
   </div>
 </div>
-<!-- Header Navigation -->
+
 <header>
   <div class="container header-inner">
     <a href="#" class="logo">
-      <svg viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="var(--accent)"/>
-        <path d="M50 15 L60 45 L90 50 L60 55 L50 85 L40 55 L10 50 L40 45 Z" fill="var(--bg)"/>
-        <circle cx="50" cy="50" r="6" fill="var(--gold)"/>
-      </svg>
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="45" fill="var(--accent)"/><path d="M50 15 L60 45 L90 50 L60 55 L50 85 L40 55 L10 50 L40 45 Z" fill="var(--bg)"/><circle cx="50" cy="50" r="6" fill="var(--gold)"/></svg>
       Survive
     </a>
-    <nav>
+    <nav aria-label="Main navigation">
       <ul class="nav-links" id="nav-links">
-        <li><a href="#mindset">Mindset</a></li>
-        <li><a href="#5cs">5 C's</a></li>
-        <li><a href="#water">Water</a></li>
-        <li><a href="#navigation">Navigation</a></li>
-        <li><a href="#signaling">Signaling</a></li>
-        <li><a href="#firstaid">First Aid</a></li>
-        <li><a href="#weather">Weather</a></li>
-        <li><a href="#solar">Solar</a></li>
-        <li><a href="#packlist">Pack List</a></li>
+        <li><a href="#mindset">Mindset</a></li><li><a href="#5cs">5 C's</a></li><li><a href="#water">Water</a></li><li><a href="#navigation">Navigation</a></li><li><a href="#signaling">Signaling</a></li><li><a href="#firstaid">First Aid</a></li><li><a href="#weather">Weather</a></li><li><a href="#solar">Solar</a></li><li><a href="#packlist">Pack List</a></li>
       </ul>
       <div class="header-actions">
-        <button class="btn-icon" id="search-btn" aria-label="Search">
-          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        </button>
-        <button class="btn-icon" id="theme-toggle" aria-label="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-        </button>
-        <button class="btn-icon" id="menu-toggle" aria-label="Menu">
-          <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-        </button>
+        <button class="btn-icon" id="search-btn" aria-label="Open search"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+        <button class="btn-icon" id="theme-toggle" aria-label="Toggle theme"><svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg></button>
+        <button class="btn-icon" id="menu-toggle" aria-label="Toggle menu"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
       </div>
     </nav>
   </div>
 </header>
 
-<main>
-  <!-- SECTION 1: Survival Mindset -->
-<section id="mindset">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1400&q=80&fit=crop')"></div>
+<main id="main">
+<!-- SECTION 1 -->
+<section id="mindset" aria-labelledby="mindset-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1400&q=80&fit=crop')" role="img" aria-label="Mountain wilderness"></div>
   <div class="container hero-content">
-    <h2>The Survival Mindset</h2>
+    <h2 id="mindset-heading">The Survival Mindset</h2>
     <div class="card">
-      <p><strong>Panic kills more people than the wilderness.</strong> Your mind is your most critical tool—or your greatest liability.</p>
-      <h3>The STOP Protocol</h3>
-      <p><strong>S</strong>it/Stop → <strong>T</strong>hink → <strong>O</strong>bserve → <strong>P</strong>lan. Apply before every decision.</p>
-      <h3>The Rule of 3s</h3>
-      <ul>
-        <li><strong>3 minutes</strong> without air</li>
-        <li><strong>3 hours</strong> without shelter (harsh conditions)</li>
-        <li><strong>3 days</strong> without water</li>
-        <li><strong>3 weeks</strong> without food</li>
-      </ul>
-      <!-- Infographic: Priority Pyramid -->
+      <p><strong>Panic kills more people than the wilderness.</strong> Your mind is your most critical tool.</p>
+      <h3>The STOP Protocol</h3><p><strong>S</strong>it/Stop → <strong>T</strong>hink → <strong>O</strong>bserve → <strong>P</strong>lan.</p>
+      <h3>Rule of 3s</h3>
+      <ul><li>3 minutes without air</li><li>3 hours without shelter (harsh)</li><li>3 days without water</li><li>3 weeks without food</li></ul>
       <div class="infographic">
-        <svg viewBox="0 0 400 240">
-          <defs><style>.p-fill{fill:var(--bg3);stroke:var(--accent);stroke-width:2}.p-txt{fill:var(--text);font-size:13px;font-weight:500}</style></defs>
-          <polygon class="p-fill" points="200,15 380,225 20,225"/><text class="p-txt" x="200" y="45" text-anchor="middle">AIR</text>
-          <polygon class="p-fill" points="200,55 340,225 60,225"/><text class="p-txt" x="200" y="90" text-anchor="middle">SHELTER</text>
-          <polygon class="p-fill" points="200,100 300,225 100,225"/><text class="p-txt" x="200" y="140" text-anchor="middle">WATER</text>
-          <polygon class="p-fill" points="200,150 260,225 140,225"/><text class="p-txt" x="200" y="195" text-anchor="middle">FOOD</text>
+        <svg viewBox="0 0 400 220" aria-label="Priority pyramid">
+          <defs><style>.pyr{fill:var(--bg3);stroke:var(--accent);stroke-width:2}.txt{fill:var(--text);font-size:13px;font-weight:500}</style></defs>
+          <polygon class="pyr" points="200,15 380,215 20,215"/><text class="txt" x="200" y="45" text-anchor="middle">AIR</text>
+          <polygon class="pyr" points="200,55 340,215 60,215"/><text class="txt" x="200" y="90" text-anchor="middle">SHELTER</text>
+          <polygon class="pyr" points="200,100 300,215 100,215"/><text class="txt" x="200" y="140" text-anchor="middle">WATER</text>
+          <polygon class="pyr" points="200,150 260,215 140,215"/><text class="txt" x="200" y="190" text-anchor="middle">FOOD</text>
         </svg>
-        <p class="text-center label">Address top priorities first</p>
       </div>
-      <p><strong>Positive Mental Attitude:</strong> Break large problems into small, actionable goals. Talk yourself through it. Survivors who stay calm survive.</p>
     </div>
   </div>
 </section>
 
-<!-- SECTION 2: The 5 C's -->
-<section id="5cs">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=1400&q=80&fit=crop')"></div>
+<!-- SECTION 2 -->
+<section id="5cs" aria-labelledby="5cs-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=1400&q=80&fit=crop')" role="img" aria-label="Campfire in wilderness"></div>
   <div class="container hero-content">
-    <h2>The 5 C's of Survival</h2>
+    <h2 id="5cs-heading">The 5 C's</h2>
     <div class="card">
-      <p>Five hard items that multiply your natural skills. Pack them first.</p>
-      <div class="grid grid-2">
-        <div><h3>C1 — Cutting</h3><p>Full-tang fixed blade (3-5"). Shelter, food prep, fire processing, first aid.</p></div>
-        <div><h3>C2 — Combustion</h3><p>Lighter ×2, ferro rod, waterproof matches. Tinder: char cloth, fatwood, birch bark.</p></div>
-        <div><h3>C3 — Cover</h3><p>Debris hut, lean-to, quinzhee. Insulate from ground. Dead air space = warmth.</p></div>
-        <div><h3>C4 — Container</h3><p>Single-wall metal bottle. Boil water, cook, render fat, carry liquids.</p></div>
+      <p>Hard items that multiply your skills. Pack first.</p>
+      <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+        <div><h3>C1 — Cutting</h3><p>Full-tang fixed blade (3-5"). Shelter, food, fire.</p></div>
+        <div><h3>C2 — Combustion</h3><p>Lighter ×2, ferro rod, matches. Char cloth, fatwood.</p></div>
+        <div><h3>C3 — Cover</h3><p>Debris hut, lean-to, quinzhee. Dead air = warmth.</p></div>
+        <div><h3>C4 — Container</h3><p>Single-wall metal bottle. Boil, cook, carry.</p></div>
       </div>
-      <h3 class="mt-2">C5 — Cordage & Essential Knots</h3>
+      <h3>C5 — Cordage & Knots</h3>
       <div class="infographic">
-        <svg viewBox="0 0 400 160">
-          <defs><style>.k-line{stroke:var(--accent2);stroke-width:3;fill:none;stroke-linecap:round}.k-dot{fill:var(--gold)}</style></defs>
-          <text x="20" y="25" fill="var(--text)" font-size="12" font-weight="600">Bowline</text>
-          <path class="k-line" d="M20,45 Q50,20 80,45 T140,45"/><circle class="k-dot" cx="140" cy="45" r="4"/>
-          <text x="160" y="50" fill="var(--text2)" font-size="11">Fixed loop, rescue, secure</text>
-          
-          <text x="20" y="80" fill="var(--text)" font-size="12" font-weight="600">Clove Hitch</text>
-          <path class="k-line" d="M20,95 L50,80 L80,110 L110,80 L140,100"/><circle class="k-dot" cx="140" cy="100" r="4"/>
-          <text x="160" y="95" fill="var(--text2)" font-size="11">Quick post/rope attachment</text>
-          
-          <text x="20" y="130" fill="var(--text)" font-size="12" font-weight="600">Sheet Bend</text>
-          <path class="k-line" d="M20,140 C40,125 60,155 80,140 S120,125 140,145"/><circle class="k-dot" cx="140" cy="145" r="4"/>
-          <text x="160" y="145" fill="var(--text2)" font-size="11">Join ropes of different thickness</text>
+        <svg viewBox="0 0 400 240" aria-label="Essential knots diagram">
+          <defs><style>.r{stroke:var(--accent2);stroke-width:3;fill:none;stroke-linecap:round}.l{fill:var(--text);font-size:10px;font-weight:600}.g{fill:var(--gold)}</style></defs>
+          <text x="10" y="18" class="l">Bowline</text><path class="r" d="M10,35 Q30,20 50,35 T90,35"/><circle cx="90" cy="35" r="4" class="g"/>
+          <text x="110" y="40" class="l" style="font-size:9px">Fixed loop</text>
+          <text x="10" y="75" class="l">Clove Hitch</text><line x1="10" y1="90" x2="180" y2="90" stroke="var(--bg3)" stroke-width="6"/><path class="r" d="M20,90 Q35,75 50,90 Q65,105 80,90 Q95,75 110,90"/>
+          <text x="120" y="95" class="l" style="font-size:9px">Quick attach</text>
+          <text x="10" y="130" class="l">Sheet Bend</text><path class="r" d="M10,145 Q30,130 50,145" stroke="var(--info)"/><path class="r" d="M40,145 Q50,160 60,145 T90,145"/>
+          <text x="100" y="150" class="l" style="font-size:9px">Join ropes</text>
+          <text x="220" y="18" class="l">Prusik</text><line x1="230" y1="40" x2="230" y2="100" stroke="var(--bg3)" stroke-width="5"/><path class="r" d="M215,60 Q230,50 245,60 Q250,75 245,90 Q230,100 215,90 Q210,75 215,60"/>
+          <text x="260" y="75" class="l" style="font-size:9px">Ascending</text>
+          <text x="220" y="140" class="l">Figure-8</text><path class="r" d="M230,155 Q245,140 260,155 Q275,170 260,185 Q245,200 230,185 Q215,170 230,155"/>
+          <text x="280" y="175" class="l" style="font-size:9px">Stopper</text>
         </svg>
       </div>
-      <p><strong>Shelter Builds:</strong> Keep interiors small to trap heat. Debris hut: ridgepole 9ft, 45° ribbing, 2ft thick debris pile, 4in bedding. Quinzhee: 6-8ft snow mound, sinter 2hrs, hollow, ventilate, mark entrance.</p>
+      <h3>Shelter Builds</h3>
+      <div class="infographic">
+        <svg viewBox="0 0 500 320" aria-label="Debris Hut cross-section">
+          <defs><style>.g{stroke:var(--text);stroke-width:2;fill:none}.p{stroke:var(--accent);stroke-width:3;fill:none}.d{fill:var(--bg3);opacity:.8}.l{fill:var(--text);font-size:10px;font-weight:600}.dim{stroke:var(--info);stroke-dasharray:3}</style></defs>
+          <line class="g" x1="20" y1="290" x2="480" y2="290"/>
+          <text x="20" y="20" class="l">DEBRIS HUT (Cross-Section)</text>
+          <path class="p" d="M60,290 L180,140 L200,130 L220,140 L340,290"/>
+          <line class="p" x1="200" y1="290" x2="200" y2="110"/>
+          <path class="d" d="M70,290 L130,210 L150,220 L170,180 L190,190 L200,160 L210,180 L230,190 L250,220 L270,230 L330,290 Z"/>
+          <ellipse cx="180" cy="270" rx="40" ry="15" fill="var(--gold)" opacity=".6"/>
+          <path class="dim" d="M200,100 L200,130"/><polygon points="195,105 200,100 205,105" fill="var(--info)"/><polygon points="195,125 200,130 205,125" fill="var(--info)"/><text x="210" y="115" class="l" fill="var(--info)">30"</text>
+          <path class="dim" d="M50,305 L350,305"/><polygon points="55,300 50,305 55,310" fill="var(--info)"/><polygon points="345,300 350,305 345,310" fill="var(--info)"/><text x="180" y="320" class="l" fill="var(--info)">9-10 FT</text>
+          <text x="20" y="305" class="l" style="font-size:9px">1. Ridgepole 9-10ft, 30" high</text><text x="220" y="305" class="l" style="font-size:9px">2. Ribbing 45°, 2' debris, 4" bedding</text>
+        </svg>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- SECTION 3: Finding Water -->
-<section id="water">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1464822759085-2f3662e9c074?w=1400&q=80&fit=crop')"></div>
+<!-- SECTION 3 -->
+<section id="water" aria-labelledby="water-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1464822759085-2f3662e9c074?w=1400&q=80&fit=crop')" role="img" aria-label="Mountain stream"></div>
   <div class="container hero-content">
-    <h2>Finding & Purifying Water</h2>
+    <h2 id="water-heading">Finding & Purifying Water</h2>
     <div class="card">
-      <p><strong>Dehydration hits fast.</strong> 1hr: thirst. 3hrs: headache/fatigue. 6hrs+: impaired judgment. Follow valleys downhill. Watch for green vegetation, converging animal trails, low-flying insects.</p>
-      <h3>Source Safety Ranking</h3>
-      <ol>
-        <li>Rainwater (safest)</li>
-        <li>Spring source (not downstream)</li>
-        <li>Fast-moving stream above activity</li>
-        <li>Still pond/lake (highest pathogen risk)</li>
-      </ol>
-      <!-- Infographic: Purification Methods -->
+      <p><strong>Dehydration hits fast.</strong> Follow valleys downhill. Watch for converging animal trails, green vegetation, low insects.</p>
+      <h3>Source Safety Ranking</h3><ol><li>Rainwater</li><li>Spring source</li><li>Fast stream</li><li>Still water (highest risk)</li></ol>
       <div class="infographic">
-        <svg viewBox="0 0 400 140">
-          <defs><style>.w-box{fill:var(--bg3);stroke:var(--info);stroke-width:2;rx:8}.w-txt{fill:var(--text);font-size:12px;font-weight:500}</style></defs>
-          <rect class="w-box" x="10" y="10" width="120" height="40"/><text class="w-txt" x="70" y="35" text-anchor="middle">BOIL (1-3 min)</text>
-          <rect class="w-box" x="145" y="10" width="120" height="40"/><text class="w-txt" x="205" y="35" text-anchor="middle">FILTER + CHARCOAL</text>
-          <rect class="w-box" x="280" y="10" width="110" height="40"/><text class="w-txt" x="335" y="35" text-anchor="middle">TABLETS</text>
-          <rect class="w-box" x="10" y="80" width="120" height="40"/><text class="w-txt" x="70" y="105" text-anchor="middle">SODIS (6h sun)</text>
-          <rect class="w-box" x="145" y="80" width="245" height="40"/><text class="w-txt" x="267" y="105" text-anchor="middle">TRANSPIRATION BAG (branch + plastic)</text>
+        <svg viewBox="0 0 400 120" aria-label="Water purification methods">
+          <defs><style>.b{fill:var(--bg3);stroke:var(--info);stroke-width:2;rx:6}.t{fill:var(--text);font-size:11px;font-weight:500}</style></defs>
+          <rect class="b" x="10" y="15" width="120" height="35"/><text class="t" x="70" y="37" text-anchor="middle">BOIL (1-3 min)</text>
+          <rect class="b" x="145" y="15" width="120" height="35"/><text class="t" x="205" y="37" text-anchor="middle">FILTER + CHARCOAL</text>
+          <rect class="b" x="280" y="15" width="110" height="35"/><text class="t" x="335" y="37" text-anchor="middle">TABLETS</text>
+          <rect class="b" x="10" y="70" width="120" height="35"/><text class="t" x="70" y="92" text-anchor="middle">SODIS (6h sun)</text>
+          <rect class="b" x="145" y="70" width="245" height="35"/><text class="t" x="267" y="92" text-anchor="middle">TRANSPIRATION BAG (branch + plastic)</text>
         </svg>
       </div>
-      <p><strong>Daily need:</strong> 2-4L depending on temp/activity. <span class="danger">Never drink untreated still water.</span> Always purify. Layer improvised filters: grass → sand → charcoal → gravel.</p>
+      <p><strong>Need:</strong> 2-4L/day. Layer improvised filters: grass → sand → charcoal → gravel. Always purify.</p>
     </div>
   </div>
 </section>
-<!-- SECTION 4: Navigation & Compass -->
-<section id="navigation">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80&fit=crop')"></div>
+
+<!-- SECTION 4 -->
+<section id="navigation" aria-labelledby="nav-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80&fit=crop')" role="img" aria-label="Forest trail"></div>
   <div class="container hero-content">
-    <h2>Finding Your Way</h2>
+    <h2 id="nav-heading">Finding Your Way</h2>
     <div class="card">
-      <h3>Interactive Compass Trainer</h3>
+      <h3>Interactive Compass</h3>
       <div class="compass-wrapper">
         <div class="compass-main">
-          <svg class="compass-svg" id="compass-svg" viewBox="0 0 200 200">
-            <defs><style>.c-ring{fill:var(--bg3);stroke:var(--accent);stroke-width:2}.c-label{fill:var(--text);font-size:10px;font-weight:600}.c-needle{fill:var(--danger)}.c-tick{stroke:var(--text2);stroke-width:1}</style></defs>
-            <circle cx="100" cy="100" r="95" class="c-ring"/>
-            <g id="compass-rose">
-              <text class="c-label" x="100" y="18" text-anchor="middle">N</text>
-              <text class="c-label" x="192" y="104" text-anchor="middle">E</text>
-              <text class="c-label" x="100" y="194" text-anchor="middle">S</text>
-              <text class="c-label" x="8" y="104" text-anchor="middle">W</text>
-              <line class="c-tick" x1="100" y1="5" x2="100" y2="15"/>
-              <line class="c-tick" x1="195" y1="100" x2="185" y2="100"/>
-              <line class="c-tick" x1="100" y1="195" x2="100" y2="185"/>
-              <line class="c-tick" x1="5" y1="100" x2="15" y2="100"/>
-            </g>
-            <polygon class="c-needle" points="100,20 95,80 100,70 105,80"/>
+          <svg class="compass-svg" id="compass-svg" viewBox="0 0 200 200" role="img" aria-label="Interactive compass">
+            <defs><style>.cr{fill:var(--bg3);stroke:var(--accent);stroke-width:2}.cl{fill:var(--text);font-size:10px;font-weight:600}.cn{fill:var(--danger)}.ct{stroke:var(--text2);stroke-width:1}</style></defs>
+            <circle cx="100" cy="100" r="95" class="cr"/>
+            <g id="compass-rose"><text class="cl" x="100" y="18" text-anchor="middle">N</text><text class="cl" x="192" y="104" text-anchor="middle">E</text><text class="cl" x="100" y="194" text-anchor="middle">S</text><text class="cl" x="8" y="104" text-anchor="middle">W</text><line class="ct" x1="100" y1="5" x2="100" y2="15"/><line class="ct" x1="195" y1="100" x2="185" y2="100"/><line class="ct" x1="100" y1="195" x2="100" y2="185"/><line class="ct" x1="5" y1="100" x2="15" y2="100"/></g>
+            <polygon class="cn" points="100,20 95,80 100,70 105,80"/>
             <circle fill="var(--gold)" cx="100" cy="100" r="6"/>
             <line x1="100" y1="100" x2="100" y2="25" stroke="var(--info)" stroke-width="2" id="compass-arrow"/>
           </svg>
-          <div class="compass-bearing"><span id="bearing-display">0</span>°</div>
+          <div class="compass-bearing" id="bearing-display" aria-live="polite">0°</div>
           <div class="compass-controls">
-            <input type="number" id="bearing-input" min="0" max="360" placeholder="0-360">
-            <button id="btn-n">N</button><button id="btn-ne">NE</button>
-            <button id="btn-e">E</button><button id="btn-se">SE</button>
-            <button id="btn-s">S</button><button id="btn-sw">SW</button>
-            <button id="btn-w">W</button><button id="btn-nw">NW</button>
+            <input type="number" id="bearing-input" min="0" max="360" placeholder="0-360" aria-label="Bearing input">
+            <button id="btn-n">N</button><button id="btn-ne">NE</button><button id="btn-e">E</button><button id="btn-se">SE</button>
+            <button id="btn-s">S</button><button id="btn-sw">SW</button><button id="btn-w">W</button><button id="btn-nw">NW</button>
             <button id="btn-practice">🎯 Practice</button>
           </div>
-          <div id="live-compass-hint" class="hidden label">Live compass: <span id="live-val">--</span>° (adjust for declination)</div>
+          <div id="live-hint" class="hidden label">Live: <span id="live-val">--</span>° (adjust for declination)</div>
         </div>
       </div>
-      <h3>Field Navigation Rules</h3>
+      <h3>Field Rules</h3>
       <ul>
-        <li><strong>Magnetic vs True:</strong> Compass points magnetic north. Adjust for local declination.</li>
-        <li><strong>Taking a bearing:</strong> Point arrow at target → rotate bezel until needle aligns with orienting arrow → read bearing.</li>
-        <li><strong>Following a bearing:</strong> Pick intermediate landmarks. Box around obstacles (90° turns).</li>
-        <li><strong>Sun shadow stick:</strong> Mark shadow tip → wait 15min → mark again → line = East/West.</li>
-        <li><strong>Lost?</strong> STAY PUT. Signal, shelter, hydrate. Moving expands search area.</li>
+        <li>Compass points magnetic north. Adjust for local declination.</li>
+        <li>Take bearing → align needle → read index.</li>
+        <li>Lost? STAY PUT. Signal, shelter, hydrate. Moving expands search area.</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- SECTION 5: Signaling & Morse -->
-<section id="signaling">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1400&q=80&fit=crop')"></div>
+<!-- SECTION 5 -->
+<section id="signaling" aria-labelledby="sig-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1400&q=80&fit=crop')" role="img" aria-label="Night sky stars"></div>
   <div class="container hero-content">
-    <h2>Signal for Rescue</h2>
+    <h2 id="sig-heading">Signal for Rescue</h2>
     <div class="card">
       <p><strong>3 of anything = distress.</strong> 3 fires, 3 blasts, 3 flashes. Pause, repeat.</p>
-      <!-- Infographic: Ground Signals -->
       <div class="infographic">
-        <div class="signal-grid">
-          <div class="signal-item">
-            <svg viewBox="0 0 60 60"><path d="M10 10 L50 50 M50 10 L10 50" stroke="var(--danger)" stroke-width="4" fill="none"/></svg>
-            <div class="code">X</div><div class="meaning">Need Medical</div>
-          </div>
-          <div class="signal-item">
-            <svg viewBox="0 0 60 60"><path d="M10 10 L30 50 L50 10" stroke="var(--gold)" stroke-width="4" fill="none"/></svg>
-            <div class="code">V</div><div class="meaning">Need Help</div>
-          </div>
-          <div class="signal-item">
-            <svg viewBox="0 0 60 60"><path d="M10 30 L50 30 L35 15" stroke="var(--accent2)" stroke-width="4" fill="none"/></svg>
-            <div class="code">→</div><div class="meaning">Traveling This Way</div>
-          </div>
-          <div class="signal-item">
-            <svg viewBox="0 0 60 60"><line x1="10" y1="15" x2="50" y2="15" stroke="var(--text)" stroke-width="4"/><line x1="10" y1="45" x2="50" y2="45" stroke="var(--text)" stroke-width="4"/></svg>
-            <div class="code">LL</div><div class="meaning">All OK</div>
-          </div>
+        <div class="signal-grid" aria-label="Ground to air signals">
+          <div class="signal-item"><svg viewBox="0 0 60 60"><path d="M10 10 L50 50 M50 10 L10 50" stroke="var(--danger)" stroke-width="4" fill="none"/></svg><div class="code">X</div><div class="meaning">Medical Help</div></div>
+          <div class="signal-item"><svg viewBox="0 0 60 60"><path d="M10 10 L30 50 L50 10" stroke="var(--gold)" stroke-width="4" fill="none"/></svg><div class="code">V</div><div class="meaning">Need Help</div></div>
+          <div class="signal-item"><svg viewBox="0 0 60 60"><path d="M10 30 L50 30 L35 15" stroke="var(--accent2)" stroke-width="4" fill="none"/></svg><div class="code">→</div><div class="meaning">Traveling This Way</div></div>
+          <div class="signal-item"><svg viewBox="0 0 60 60"><line x1="10" y1="15" x2="50" y2="15" stroke="var(--text)" stroke-width="4"/><line x1="10" y1="45" x2="50" y2="45" stroke="var(--text)" stroke-width="4"/></svg><div class="code">LL</div><div class="meaning">All OK</div></div>
         </div>
       </div>
-      
       <h3 class="mt-2">Morse Code Trainer</h3>
       <div class="morse-wrapper">
-        <input type="text" id="morse-input" class="morse-input" placeholder="Type message..." autocomplete="off">
-        <div class="morse-display" id="morse-display"></div>
+        <input type="text" id="morse-input" class="morse-input" placeholder="Type message..." aria-label="Morse text input">
+        <div class="morse-display" id="morse-display" aria-live="polite"></div>
         <div class="morse-controls">
-          <label>Speed (WPM): <input type="range" id="morse-speed" min="5" max="25" value="12"><span id="wpm-val">12</span></label>
-          <label>Tone (Hz): <input type="range" id="morse-freq" min="400" max="800" value="600"><span id="freq-val">600</span></label>
-          <button id="morse-play">▶ Play</button>
-          <button id="morse-stop" class="stop">■ Stop</button>
+          <label>Speed: <input type="range" id="morse-speed" min="5" max="25" value="12"><span id="wpm-val">12</span></label>
+          <label>Tone: <input type="range" id="morse-freq" min="400" max="800" value="600"><span id="freq-val">600</span></label>
+          <button id="morse-play">▶ Play</button><button id="morse-stop" class="stop">■ Stop</button>
         </div>
         <div class="morse-phrases">
-          <span class="morse-phrase" data-text="SOS">SOS</span>
-          <span class="morse-phrase" data-text="HELP">HELP</span>
-          <span class="morse-phrase" data-text="SEND HELP">SEND HELP</span>
-          <span class="morse-phrase" data-text="NEED WATER">NEED WATER</span>
-          <span class="morse-phrase" data-text="INJURED">INJURED</span>
+          <span class="morse-phrase" data-text="SOS">SOS</span><span class="morse-phrase" data-text="HELP">HELP</span><span class="morse-phrase" data-text="SEND HELP">SEND HELP</span><span class="morse-phrase" data-text="NEED WATER">NEED WATER</span><span class="morse-phrase" data-text="INJURED">INJURED</span>
         </div>
-        <table class="morse-table" id="morse-table"></table>
+        <table class="morse-table" id="morse-table" aria-label="Morse reference table"></table>
       </div>
-      <p><strong>Signal mirror:</strong> Hold near eye, look at target, adjust until flash hits. <strong>Fire signals:</strong> 3 in triangle. Green leaves = white smoke (forest). Rubber = black smoke (snow/sky).</p>
-      <p class="danger"><strong>Helicopter:</strong> Never run toward it. Arms crossed overhead = help needed. Thumbs up = OK. Stay clear of tail rotor.</p>
     </div>
   </div>
 </section>
 
-<!-- SECTION 6: First Aid -->
-<section id="firstaid">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1584464491033-06628f6a8a8f?w=1400&q=80&fit=crop')"></div>
+<!-- SECTION 6 -->
+<section id="firstaid" aria-labelledby="fa-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1584464491033-06628f6a8a8f?w=1400&q=80&fit=crop')" role="img" aria-label="First aid kit"></div>
   <div class="container hero-content">
-    <h2>Wilderness First Aid</h2>
+    <h2 id="fa-heading">Wilderness First Aid</h2>
     <div class="card">
       <p class="danger"><strong>Field triage only.</strong> Get to professional help ASAP.</p>
-      <h3>Primary Survey (ABCDE)</h3>
-      <p><strong>A</strong>irway → <strong>B</strong>reathing → <strong>C</strong>irculation/bleeding → <strong>D</strong>isability → <strong>E</strong>xposure</p>
-      
-      <div class="grid grid-2">
-        <div>
-          <h3>Bleeding</h3>
-          <ol><li>Direct pressure (5-10 min)</li><li>Pack deep wounds with gauze</li><li>Tourniquet: life-threatening limb only. Note time.</li><li>Irrigate with clean water</li></ol>
-        </div>
-        <div>
-          <h3>Fractures & Sprains</h3>
-          <p>Splint joint above & below. Open fracture: cover, don't push bone in. RICE for sprains.</p>
-        </div>
-        <div>
-          <h3>Hypothermia</h3>
-          <p>Mild: warm sweet drinks. Mod/Severe: insulate, rewarm core first. <span class="danger">Never extremities first (afterdrop risk).</span></p>
-        </div>
-        <div>
-          <h3>Heat Stroke</h3>
-          <p>Hot/dry skin OR profuse sweating + confusion. <span class="danger">Aggressive cooling: wet, fan, ice to neck/groin/armpits. Evacuate.</span></p>
-        </div>
-        <div>
-          <h3>Snake Bite</h3>
-          <p>Stay calm, immobilize at heart level, mark swelling every 15min. <span class="danger">DO NOT cut/suck/ice. Get antivenin.</span></p>
-        </div>
-        <div>
-          <h3>Allergy/Anaphylaxis</h3>
-          <p>Hives, swelling, breathing trouble. EpiPen if available. Position: sit if breathing issues, lie flat if fainting. Evacuate.</p>
-        </div>
+      <h3>ABCDE</h3><p><strong>A</strong>irway → <strong>B</strong>reathing → <strong>C</strong>irculation → <strong>D</strong>isability → <strong>E</strong>xposure</p>
+      <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:1.5rem">
+        <div><h3>Bleeding</h3><ol><li>Direct pressure (5-10 min)</li><li>Pack deep wounds</li><li>Tourniquet: life-threatening limb. Note time.</li></ol></div>
+        <div><h3>Fractures</h3><p>Splint joint above & below. Open fracture: cover, don't push bone. RICE for sprains.</p></div>
+        <div><h3>Hypothermia</h3><p>Remove wet layers. Rewarm core first. <span class="danger">Never extremities first.</span></p></div>
+        <div><h3>Heat Stroke</h3><p>Hot/dry + confusion. <span class="danger">Aggressive cooling: wet, fan, ice to neck/armpits/groin. Evacuate.</span></p></div>
+        <div><h3>Snake Bite</h3><p>Immobilize, mark swelling every 15m. <span class="danger">DO NOT cut/suck/ice.</span></p></div>
+        <div><h3>Allergy</h3><p>Hives, breathing trouble. EpiPen if available. Position: sit if breathing, lie if faint. Evacuate.</p></div>
       </div>
-    </div>
-  </div>
-</section>
-<!-- SECTION 7: Weather Reading -->
-<section id="weather">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1469474968028-56623e02e42e?w=1400&q=80&fit=crop')"></div>
-  <div class="container hero-content">
-    <h2>Reading the Sky</h2>
-    <div class="card">
-      <p><strong>30-30 Lightning Rule:</strong> Flash-to-thunder ≤30s? Shelter immediately. Wait 30min after last thunder.</p>
-      <!-- Infographic: Cloud Types -->
-      <div class="infographic">
-        <div class="cloud-grid">
-          <div class="cloud-item">
-            <svg viewBox="0 0 80 60"><path d="M20 40 Q25 25 35 30 Q45 15 60 25 Q70 30 70 45 Z" fill="var(--accent2)" opacity="0.8"/></svg>
-            <div class="name">Cumulus</div><div class="desc">Fair weather (if small)</div>
-          </div>
-          <div class="cloud-item">
-            <svg viewBox="0 0 80 60"><path d="M20 45 Q30 20 40 10 Q50 5 60 15 L65 45 Z" fill="var(--danger)" opacity="0.6"/><path d="M15 50 L65 50" stroke="var(--danger)" stroke-width="2"/></svg>
-            <div class="name">Cumulonimbus</div><div class="desc">Thunderstorm imminent</div>
-          </div>
-          <div class="cloud-item">
-            <svg viewBox="0 0 80 60"><path d="M20 35 Q30 25 45 30 Q55 20 65 28 L65 35 Z" fill="var(--text2)" opacity="0.5"/></svg>
-            <div class="name">Cirrus</div><div class="desc">Weather change in 24-48h</div>
-          </div>
-          <div class="cloud-item">
-            <svg viewBox="0 0 80 60"><rect x="10" y="30" width="60" height="15" rx="5" fill="var(--text2)" opacity="0.6"/></svg>
-            <div class="name">Stratus</div><div class="desc">Persistent rain/drizzle</div>
-          </div>
-        </div>
-      </div>
-      <h3>Pressure & Wind Signs</h3>
-      <ul>
-        <li>Wind <strong>backing</strong> (CCW) = worsening. <strong>Veering</strong> (CW) = improving.</li>
-        <li>Campfire smoke swirling/descending = low pressure/storm.</li>
-        <li>Aching joints, louder frogs, swallows low = rain coming.</li>
-        <li>"Red sky at night" = fair weather. "Red sky morning" = storm warning.</li>
-      </ul>
     </div>
   </div>
 </section>
 
-<!-- SECTION 8: Solar Panel Optimizer -->
-<section id="solar">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1400&q=80&fit=crop')"></div>
+<!-- SECTION 7 -->
+<section id="weather" aria-labelledby="weather-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1469474968028-56623e02e42e?w=1400&q=80&fit=crop')" role="img" aria-label="Storm clouds"></div>
   <div class="container hero-content">
-    <h2>Solar Panel Optimizer</h2>
+    <h2 id="weather-heading">Reading the Sky</h2>
+    <div class="card">
+      <p><strong>30-30 Lightning Rule:</strong> Flash-to-thunder ≤30s? Shelter immediately. Wait 30min after last thunder.</p>
+      <div class="infographic">
+        <div class="cloud-grid" aria-label="Cloud types">
+          <div class="cloud-item"><svg viewBox="0 0 100 80"><ellipse cx="35" cy="55" rx="25" ry="18" fill="var(--accent2)" opacity="0.9"/><ellipse cx="55" cy="50" rx="28" ry="22" fill="var(--accent2)" opacity="0.9"/><ellipse cx="75" cy="55" rx="20" ry="15" fill="var(--accent2)" opacity="0.9"/><ellipse cx="50" cy="35" rx="22" ry="18" fill="var(--accent2)" opacity="0.95"/></svg><div class="name">Cumulus</div><div class="desc">Fair weather</div></div>
+          <div class="cloud-item"><svg viewBox="0 0 100 80"><path d="M30 70 Q25 50 35 45 Q40 15 50 10 Q60 5 65 20 Q75 25 70 70 Z" fill="var(--danger)" opacity="0.7"/><path d="M20 70 L80 70" stroke="var(--danger)" stroke-width="3" stroke-dasharray="5,3"/></svg><div class="name">Cumulonimbus</div><div class="desc">Storm - shelter</div></div>
+          <div class="cloud-item"><svg viewBox="0 0 100 80"><path d="M20 40 Q25 35 35 38 Q40 30 50 35 Q60 28 70 33 Q80 30 85 38" stroke="var(--text2)" stroke-width="2" fill="none" opacity="0.6"/></svg><div class="name">Cirrus</div><div class="desc">Change in 24-48h</div></div>
+          <div class="cloud-item"><svg viewBox="0 0 100 80"><rect x="10" y="40" width="80" height="20" rx="8" fill="var(--text2)" opacity="0.6"/></svg><div class="name">Stratus</div><div class="desc">Overcast/drizzle</div></div>
+        </div>
+      </div>
+      <p>Wind backing (CCW) = worsening. Veering (CW) = improving. Heavy dew/clear night = fair weather likely.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8 -->
+<section id="solar" aria-labelledby="solar-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1400&q=80&fit=crop')" role="img" aria-label="Solar panel"></div>
+  <div class="container hero-content">
+    <h2 id="solar-heading">Solar Panel Optimizer</h2>
     <div class="card">
       <div class="solar-wrapper">
         <div class="solar-quick">
-          <label>Location: <select id="solar-loc"><option value="mid" selected>Mid-Latitude (45°)</option><option value="low">Low (23°)</option><option value="high">High (60°)</option></select></label>
-          <label>Date: <input type="date" id="solar-date"></label>
+          <label>Latitude Zone: <select id="solar-loc" aria-label="Latitude zone"><option value="low">Tropical (0-30°)</option><option value="mid" selected>Mid (30-50°)</option><option value="high">High (50-70°)</option></select></label>
         </div>
         <div class="solar-result">
           <div class="solar-result-grid">
-            <div class="solar-result-item"><span class="value" id="solar-tilt">--</span><span class="label">TILT ANGLE</span></div>
-            <div class="solar-result-item"><span class="value" id="solar-hrs">--</span><span class="label">PEAK SUN HRS</span></div>
-            <div class="solar-result-item"><span class="value" id="solar-dir">--</span><span class="label">DIRECTION</span></div>
-            <div class="solar-result-item"><span class="value" id="solar-loss">--</span><span class="label">REAL OUTPUT</span></div>
+            <div class="solar-result-item"><span class="value" id="solar-tilt">--</span><span class="label">TILT</span></div>
+            <div class="solar-result-item"><span class="value" id="solar-dir">--</span><span class="label">FACE</span></div>
+            <div class="solar-result-item"><span class="value" id="solar-hrs">--</span><span class="label">HOURS</span></div>
+            <div class="solar-result-item"><span class="value" id="solar-loss">--</span><span class="label">OUTPUT</span></div>
           </div>
-          <!-- Infographic: Panel Angle -->
-          <div class="solar-diagram">
-            <svg viewBox="0 0 300 160">
-              <line x1="20" y1="140" x2="280" y2="140" stroke="var(--text)" stroke-width="2"/>
-              <rect id="solar-panel-svg" x="100" y="80" width="80" height="10" fill="var(--accent2)" stroke="var(--accent)" stroke-width="2" transform="rotate(-30 140 135)"/>
-              <path d="M140,135 A60,60 0 0 0 190,115" stroke="var(--gold)" stroke-width="2" fill="none" id="solar-arc"/>
-              <text x="195" y="110" fill="var(--gold)" font-size="12" id="solar-angle-label">30°</text>
-              <circle cx="200" cy="30" r="15" fill="var(--gold)"/>
-            </svg>
-          </div>
+          <div class="solar-diagram"><svg viewBox="0 0 300 160"><line x1="20" y1="140" x2="280" y2="140" stroke="var(--text)" stroke-width="2"/><rect id="solar-panel-svg" x="100" y="80" width="80" height="10" fill="var(--accent2)" stroke="var(--accent)" stroke-width="2" transform="rotate(-45 140 135)"/><path d="M140,135 A60,60 0 0 0 185,110" stroke="var(--gold)" stroke-width="2" fill="none"/><text x="190" y="105" fill="var(--gold)" font-size="14" font-weight="600" id="solar-angle-label">45°</text><circle cx="220" cy="40" r="18" fill="var(--gold)"/></svg></div>
         </div>
-        <details class="mt-2"><summary class="label">How it works (click)</summary>
-          <p>Declination: `23.45 × sin(360/365 × (284 + dayOfYear))`<br>Optimal Tilt: `|latitude - declination|` (clamped 0-90°)<br>Real-world: 70-85% of rated wattage due to angle/temp losses.</p>
-        </details>
-      </div>
-      <div class="solar-tips">
-        <h4>Practical Tips</h4>
-        <ul>
-          <li><strong>Clean daily</strong> in dusty conditions. 10% off angle = 5-15% loss.</li>
-          <li><strong>Partial shade kills output</strong>. One cell blocked = whole panel drops.</li>
-          <li><strong>Morning frost</strong>: Wait to melt. Don't wipe (scratches coating).</li>
-          <li><strong>Series = higher voltage</strong>. Parallel = higher current. Match controller.</li>
-        </ul>
+        <div class="solar-tips"><h4>Critical Tips</h4><ul><li>Clean daily (dust = 20-50% loss)</li><li>Avoid shade (1 cell = whole panel)</li><li>100W panel = 70-85W real-world</li><li>Winter: +15°, Summer: -15° tilt</li></ul></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SECTION 9: Pack List -->
-<section id="packlist">
-  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=1400&q=80&fit=crop')"></div>
+<!-- SECTION 9 -->
+<section id="packlist" aria-labelledby="pack-heading">
+  <div class="hero" style="background-image:url('https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=1400&q=80&fit=crop')" role="img" aria-label="Backpacking gear"></div>
   <div class="container hero-content">
-    <h2>What to Always Bring</h2>
+    <h2 id="pack-heading">What to Always Bring</h2>
     <div class="card">
-      <p>The <strong>10 Essentials</strong> updated. Not optional—survival critical.</p>
       <div class="pack-wrapper">
-        <div class="pack-actions">
-          <button id="pack-print">🖨️ Print</button>
-          <button id="pack-reset" class="secondary">↺ Reset</button>
-          <span class="pack-count"><span id="pack-checked">0</span> of <span id="pack-total">0</span> checked</span>
-        </div>
-        <ul class="pack-list" id="pack-list">
-          <!-- Categories will be injected via JS to keep HTML clean, but I'll hardcode them for reliability -->
-          <li class="pack-category"><h4>Navigation</h4><ul><li class="pack-item"><input type="checkbox" id="p1"><label for="p1">Topographic map (waterproofed)</label></li><li class="pack-item"><input type="checkbox" id="p2"><label for="p2">Compass (baseplate, no batteries)</label></li><li class="pack-item"><input type="checkbox" id="p3"><label for="p3">GPS/phone with offline maps</label></li><li class="pack-item"><input type="checkbox" id="p4"><label for="p4">Power bank / extra batteries</label></li></ul></li>
-          <li class="pack-category"><h4>Fire</h4><ul><li class="pack-item"><input type="checkbox" id="p5"><label for="p5">Lighter ×2 (different pockets)</label></li><li class="pack-item"><input type="checkbox" id="p6"><label for="p6">Ferro rod with striker</label></li><li class="pack-item"><input type="checkbox" id="p7"><label for="p7">Waterproof matches (sealed)</label></li><li class="pack-item"><input type="checkbox" id="p8"><label for="p8">Fire tinder (char cloth)</label></li></ul></li>
-          <li class="pack-category"><h4>Shelter & Water</h4><ul><li class="pack-item"><input type="checkbox" id="p9"><label for="p9">Emergency bivy / space blanket</label></li><li class="pack-item"><input type="checkbox" id="p10"><label for="p10">Tarp (8×10) + guylines</label></li><li class="pack-item"><input type="checkbox" id="p11"><label for="p11">50ft+ paracord</label></li><li class="pack-item"><input type="checkbox" id="p12"><label for="p12">Water filter (Sawyer/kind)</label></li><li class="pack-item"><input type="checkbox" id="p13"><label for="p13">Purification tablets (backup)</label></li><li class="pack-item"><input type="checkbox" id="p14"><label for="p14">Single-wall metal bottle</label></li></ul></li>
-          <li class="pack-category"><h4>First Aid & Light</h4><ul><li class="pack-item"><input type="checkbox" id="p15"><label for="p15">Tourniquet (CAT style)</label></li><li class="pack-item"><input type="checkbox" id="p16"><label for="p16">Hemostatic gauze + wound strips</label></li><li class="pack-item"><input type="checkbox" id="p17"><label for="p17">Pain reliever + antihistamine</label></li><li class="pack-item"><input type="checkbox" id="p18"><label for="p18">Headlamp (hands-free) + backup</label></li></ul></li>
-          <li class="pack-category"><h4>Tools & Food</h4><ul><li class="pack-item"><input type="checkbox" id="p19"><label for="p19">Fixed blade knife</label></li><li class="pack-item"><input type="checkbox" id="p20"><label for="p20">Multi-tool</label></li><li class="pack-item"><input type="checkbox" id="p21"><label for="p21">Duct tape (wrapped on bottle)</label></li><li class="pack-item"><input type="checkbox" id="p22"><label for="p22">2000+ cal emergency food + 1 day extra</label></li></ul></li>
-          <li class="pack-category"><h4>Signal & Admin</h4><ul><li class="pack-item"><input type="checkbox" id="p23"><label for="p23">Whistle (pealess) + mirror</label></li><li class="pack-item"><input type="checkbox" id="p24"><label for="p24">Trip plan left with contact</label></li><li class="pack-item"><input type="checkbox" id="p25"><label for="p25">Rain jacket + insulation layer</label></li><li class="pack-item"><input type="checkbox" id="p26"><label for="p26">Sunscreen SPF 30+ + sunglasses</label></li></ul></li>
+        <div class="pack-actions"><button id="pack-print">🖨️ Print</button><button id="pack-reset" class="secondary">↺ Reset</button><span class="pack-count"><span id="pack-checked">0</span> of <span id="pack-total">0</span></span></div>
+        <ul class="pack-list" id="pack-list" aria-label="Survival checklist">
+          <li class="pack-category"><h4>Navigation</h4><ul><li class="pack-item"><input type="checkbox" id="p1"><label for="p1">Topographic map</label></li><li class="pack-item"><input type="checkbox" id="p2"><label for="p2">Compass</label></li><li class="pack-item"><input type="checkbox" id="p3"><label for="p3">GPS/phone offline</label></li><li class="pack-item"><input type="checkbox" id="p4"><label for="p4">Power bank</label></li></ul></li>
+          <li class="pack-category"><h4>Fire</h4><ul><li class="pack-item"><input type="checkbox" id="p5"><label for="p5">Lighter ×2</label></li><li class="pack-item"><input type="checkbox" id="p6"><label for="p6">Ferro rod</label></li><li class="pack-item"><input type="checkbox" id="p7"><label for="p7">Waterproof matches</label></li><li class="pack-item"><input type="checkbox" id="p8"><label for="p8">Char cloth</label></li></ul></li>
+          <li class="pack-category"><h4>Shelter & Water</h4><ul><li class="pack-item"><input type="checkbox" id="p9"><label for="p9">Emergency bivy</label></li><li class="pack-item"><input type="checkbox" id="p10"><label for="p10">Tarp + cord</label></li><li class="pack-item"><input type="checkbox" id="p11"><label for="p11">50ft paracord</label></li><li class="pack-item"><input type="checkbox" id="p12"><label for="p12">Filter + tablets</label></li><li class="pack-item"><input type="checkbox" id="p13"><label for="p13">Metal bottle</label></li></ul></li>
+          <li class="pack-category"><h4>First Aid & Tools</h4><ul><li class="pack-item"><input type="checkbox" id="p14"><label for="p14">Tourniquet</label></li><li class="pack-item"><input type="checkbox" id="p15"><label for="p15">Meds + gauze</label></li><li class="pack-item"><input type="checkbox" id="p16"><label for="p16">Headlamp + backup</label></li><li class="pack-item"><input type="checkbox" id="p17"><label for="p17">Knife + multi-tool</label></li></ul></li>
+          <li class="pack-category"><h4>Signal & Admin</h4><ul><li class="pack-item"><input type="checkbox" id="p18"><label for="p18">Whistle + mirror</label></li><li class="pack-item"><input type="checkbox" id="p19"><label for="p19">Trip plan left</label></li><li class="pack-item"><input type="checkbox" id="p20"><label for="p20">Rain/insulation</label></li><li class="pack-item"><input type="checkbox" id="p21"><label for="p21">Sunscreen + food</label></li></ul></li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 </main>
+
 <footer>
   <div class="container">
     <p><strong>Survive</strong> — Knowledge is the ultimate survival tool</p>
-    <p class="label">Disclaimer: Educational purposes only. Get proper training. Conditions vary—use judgment.</p>
-    <p class="label">Photography by Unsplash contributors</p>
-    <div class="pwa-prompt" id="pwa-prompt"><p>📱 <strong>Add to Home Screen</strong> for offline access.</p></div>
+    <p class="label">Educational purposes only. Train before relying. Conditions vary.</p>
+    <div class="pwa-prompt" id="pwa-prompt">📱 Add to Home Screen for offline access</div>
   </div>
 </footer>
 
-<!-- ===== JAVASCRIPT ===== -->
+<button id="sos-btn" class="no-print" aria-label="Emergency SOS"><svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>SOS</button>
+<div id="font-controls" class="no-print"><button id="font-sm" aria-label="Small text">A-</button><button id="font-md" class="active" aria-label="Medium text">A</button><button id="font-lg" aria-label="Large text">A+</button></div>
+
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  // === THEME TOGGLE ===
-  const themeBtn = document.getElementById('theme-toggle');
-  const themeIcon = document.getElementById('theme-icon');
-  const toggleTheme = () => {
+(function(){
+  "use strict";
+  const $=id=>document.getElementById(id);
+  const $$=sel=>document.querySelectorAll(sel);
+  
+  window.addEventListener('load',()=>{$('loading-overlay')?.classList.add('hidden')});
+  
+  // Theme
+  const themeBtn=$('theme-toggle'),themeIcon=$('theme-icon');
+  themeBtn?.addEventListener('click',()=>{
     document.body.classList.toggle('light');
-    const isLight = document.body.classList.contains('light');
-    themeIcon.innerHTML = isLight 
-      ? '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>'
-      : '<path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>';
-  };
-  themeBtn.addEventListener('click', toggleTheme);
-
-  // === NAVIGATION & MENU ===
-  const menuBtn = document.getElementById('menu-toggle');
-  const navLinks = document.getElementById('nav-links');
-  menuBtn.addEventListener('click', () => navLinks.classList.toggle('active'));
-  document.querySelectorAll('.nav-links a').forEach(a => {
-    a.addEventListener('click', () => {
-      navLinks.classList.remove('active');
-      document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
-      a.classList.add('active');
-    });
+    const l=document.body.classList.contains('light');
+    themeIcon.innerHTML=l?'<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>':'<path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>';
   });
 
-  // === SEARCH (FIXED FOR MOBILE) ===
-  const searchBtn = document.getElementById('search-btn');
-  const searchOverlay = document.getElementById('search-overlay');
-  const searchInput = document.getElementById('search-input');
-  const searchClose = document.getElementById('search-close');
-  const searchResults = document.getElementById('search-results');
+  // Menu
+  const menu=$('menu-toggle'),nav=$('nav-links');
+  menu?.addEventListener('click',e=>{e.stopPropagation();nav?.classList.toggle('active')});
+  nav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('active')));
+  document.addEventListener('click',e=>{if(nav?.classList.contains('active')&&!nav.contains(e.target)&&!menu.contains(e.target))nav.classList.remove('active')});
 
-  const openSearch = () => {
-    searchOverlay.classList.add('active');
-    setTimeout(() => searchInput.focus(), 100);
-  };
-  const closeSearch = () => {
-    searchOverlay.classList.remove('active');
-    searchInput.value = '';
-    searchResults.innerHTML = '';
-    searchInput.blur();
-  };
-  searchBtn.addEventListener('click', openSearch);
-  searchClose.addEventListener('click', closeSearch);
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-    if (e.key === 'Escape') closeSearch();
-  });
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.toLowerCase().trim();
-    searchResults.innerHTML = '';
-    if (q.length < 2) return;
-    let found = 0;
-    document.querySelectorAll('section').forEach(sec => {
-      if (sec.textContent.toLowerCase().includes(q)) {
-        found++;
-        const div = document.createElement('div');
-        div.className = 'search-result';
-        const title = sec.querySelector('h2')?.textContent || sec.id;
-        div.innerHTML = `<strong>${title.replace(new RegExp(q, 'gi'), match => `<mark>${match}</mark>`)}</strong><br><small>${sec.id}</small>`;
-        div.addEventListener('click', () => { closeSearch(); sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-        searchResults.appendChild(div);
+  // Search
+  const sBtn=$('search-btn'),sOv=$('search-overlay'),sIn=$('search-input'),sCl=$('search-close'),sRes=$('search-results');
+  const openS=()=>{sOv?.classList.add('active');setTimeout(()=>sIn?.focus(),50)};
+  const closeS=()=>{sOv?.classList.remove('active');if(sIn)sIn.value='';if(sRes)sRes.innerHTML='';sIn?.blur()};
+  sBtn?.addEventListener('click',openS);sCl?.addEventListener('click',closeS);
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openS()}if(e.key==='Escape')closeS()});
+  sIn?.addEventListener('input',function(){
+    const q=this.value.toLowerCase().trim();sRes.innerHTML='';if(q.length<2)return;
+    $$('section').forEach(sec=>{
+      if(sec.textContent.toLowerCase().includes(q)){
+        const t=sec.querySelector('h2')?.textContent||sec.id;
+        const d=document.createElement('div');d.className='search-result';
+        d.innerHTML=`<strong>${t.replace(new RegExp(q,'gi'),m=>`<mark>${m}</mark>`)}</strong><br><small>${sec.id}</small>`;
+        d.addEventListener('click',()=>{closeS();sec.scrollIntoView({behavior:'smooth',block:'start'})});
+        sRes.appendChild(d);
       }
     });
-    if (found === 0) searchResults.innerHTML = '<div class="search-result">No results found</div>';
+    if(!sRes.innerHTML)sRes.innerHTML='<div class="search-result">No results</div>';
   });
 
-  // === SCROLL PROGRESS ===
-  const progress = document.getElementById('progress');
-  window.addEventListener('scroll', () => {
-    const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-    progress.style.width = `${scrolled}%`;
-  }, { passive: true });
+  // Progress
+  window.addEventListener('scroll',()=>{const p=$('progress');if(p)p.style.width=`${(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100}%`},{passive:true});
 
-  // === COMPASS TRAINER ===
-  const compassSvg = document.getElementById('compass-svg');
-  const rose = document.getElementById('compass-rose');
-  const arrow = document.getElementById('compass-arrow');
-  const bearingDisp = document.getElementById('bearing-display');
-  const bearingInput = document.getElementById('bearing-input');
-  let currentAngle = 0;
+  // Compass
+  const svg=$('compass-svg'),rose=$('compass-rose'),arrow=$('compass-arrow'),bDisp=$('bearing-display'),bIn=$('bearing-input');
+  let cAng=0;const setAng=d=>{cAng=((d%360)+360)%360;if(bDisp)bDisp.textContent=`${Math.round(cAng)}°`;if(bIn)bIn.value=Math.round(cAng);if(rose)rose.setAttribute('transform',`rotate(${cAng} 100 100)`);if(arrow)arrow.setAttribute('transform',`rotate(${cAng} 100 100)`)};
+  const pres={N:0,NE:45,E:90,SE:135,S:180,SW:225,W:270,NW:315};
+  Object.entries(pres).forEach(([k,v])=>$(`btn-${k.toLowerCase()}`)?.addEventListener('click',()=>setAng(v)));
+  bIn?.addEventListener('change',e=>{const v=parseFloat(e.target.value);if(!isNaN(v))setAng(v)});
+  let drag=false,sa=0;const gAng=e=>{const r=svg.getBoundingClientRect(),x=(e.touches?e.touches[0].clientX:e.clientX)-r.left-r.width/2,y=(e.touches?e.touches[0].clientY:e.clientY)-r.top-r.height/2;return Math.atan2(y,x)*180/Math.PI+90};
+  const onSt=e=>{drag=true;sa=cAng-gAng(e);e.preventDefault()};
+  const onMv=e=>{if(drag){setAng(sa+gAng(e));e.preventDefault()}};
+  const onEn=()=>{drag=false};
+  svg?.addEventListener('mousedown',onSt);svg?.addEventListener('touchstart',onSt,{passive:false});
+  window.addEventListener('mousemove',onMv);window.addEventListener('touchmove',onMv,{passive:false});
+  window.addEventListener('mouseup',onEn);window.addEventListener('touchend',onEn);
+  $('btn-practice')?.addEventListener('click',()=>{const t=Math.floor(Math.random()*360);if(bDisp)bDisp.textContent=`Match: ${t}°`;const i=setInterval(()=>{if(Math.abs(cAng-t)<=5){clearInterval(i);if(bDisp)bDisp.textContent=`✓ ${Math.round(cAng)}°`}},100);setTimeout(()=>clearInterval(i),8000)});
 
-  const setAngle = deg => {
-    currentAngle = ((deg % 360) + 360) % 360;
-    bearingDisp.textContent = Math.round(currentAngle);
-    bearingInput.value = Math.round(currentAngle);
-    rose.setAttribute('transform', `rotate(${currentAngle} 100 100)`;
-    arrow.setAttribute('transform', `rotate(${currentAngle} 100 100)`;
-  };
+  // Morse
+  const mm={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',' ':'/'};
+  const mIn=$('morse-input'),mDisp=$('morse-display'),mSp=$('morse-speed'),mFr=$('morse-freq'),wv=$('wpm-val'),fv=$('freq-val');
+  let actx,play=false,outs=[];
+  const upd=()=>{if(!mIn||!mDisp)return;mDisp.innerHTML=mIn.value.toUpperCase().split('').map(c=>`<span data-c="${c}">${mm[c]||''}</span>`).join(' ')};
+  mIn?.addEventListener('input',upd);mSp?.addEventListener('input',()=>{if(wv)wv.textContent=mSp.value});mFr?.addEventListener('input',()=>{if(fv)fv.textContent=mFr.value});
+  const tone=(st,d,hz)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=hz;g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(.3,st+.005);g.gain.setValueAtTime(.3,st+d-.005);g.gain.linearRampToValueAtTime(0,st+d);o.start(st);o.stop(st+d)};
+  const playM=t=>{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();stopM();play=true;const w=parseInt(mSp?.value||12),h=parseInt(mFr?.value||600),di=1200/w;let tm=actx.currentTime+.05;const cd=t.toUpperCase().split('').map(c=>mm[c]||'').join(' '),sp=mDisp?.children||[];let si=0;for(let i=0;i<cd.length;i++){const s=cd[i],el=sp[si];if(s==='.'){tone(tm,di/1000,h);if(el){el.classList.add('active');outs.push(setTimeout(()=>el.classList.remove('active'),di))}tm+=di/1000+.005;si++}else if(s==='-'){tone(tm,di*3/1000,h);if(el){el.classList.add('active');outs.push(setTimeout(()=>el.classList.remove('active'),di*3))}tm+=di*3/1000+.005;si++}else if(s==='/'){tm+=di*7/1000;si++}else if(s===' '){tm+=di*3/1000}}outs.push(setTimeout(()=>play=false,(tm-actx.currentTime)*1000+50))};
+  const stopM=()=>{outs.forEach(clearTimeout);outs=[];play=false;if(mDisp)mDisp.querySelectorAll('span').forEach(s=>s.classList.remove('active'))};
+  $('morse-play')?.addEventListener('click',()=>playM(mIn?.value||'SOS'));$('morse-stop')?.addEventListener('click',stopM);
+  $$('.morse-phrase').forEach(el=>el.addEventListener('click',()=>{if(mIn)mIn.value=el.dataset.text;upd();playM(el.dataset.text)}));
+  const mt=$('morse-table');if(mt){let h='<tr>';const al='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');al.forEach((c,i)=>{h+=`<td class="char" data-c="${c}">${c}</td><td class="code">${mm[c]}</td>`;if((i+1)%4===0&&i<al.length-1)h+='</tr><tr>'});h+='</tr>';mt.innerHTML=h;mt.querySelectorAll('.char').forEach(td=>td.addEventListener('click',()=>{if(mIn)mIn.value=td.dataset.c;upd();playM(td.dataset.c)}))}
 
-  const presets = { 'btn-n':0, 'btn-ne':45, 'btn-e':90, 'btn-se':135, 'btn-s':180, 'btn-sw':225, 'btn-w':270, 'btn-nw':315 };
-  Object.entries(presets).forEach(([id, val]) => document.getElementById(id).addEventListener('click', () => setAngle(val)));
-  bearingInput.addEventListener('change', e => setAngle(parseFloat(e.target.value) || 0));
+  // Solar
+  const sLoc=$('solar-loc');const calcS=()=>{const lm={low:23,mid:45,high:60},lt=lm[sLoc?.value||'mid'];$('solar-tilt').textContent=lt;$('solar-dir').textContent=lt>=0?'South':'North';$('solar-hrs').textContent=lt<30?'5-6':lt<50?'4-5':'3-4';$('solar-loss').textContent='70-85%';$('solar-angle-label').textContent=`${lt}°`;const p=$('solar-panel-svg');if(p)p.setAttribute('transform',`rotate(${90-lt} 140 135)`)};sLoc?.addEventListener('change',calcS);calcS();
 
-  // Drag/Touch Logic
-  let isDragging = false, startAngle = 0;
-  const getAngle = (e) => {
-    const rect = compassSvg.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left - rect.width/2;
-    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top - rect.height/2;
-    return Math.atan2(y, x) * 180 / Math.PI + 90;
-  };
-  const onStart = e => { isDragging = true; startAngle = currentAngle - getAngle(e); e.preventDefault(); };
-  const onMove = e => { if (isDragging) { setAngle(startAngle + getAngle(e)); e.preventDefault(); } };
-  const onEnd = () => isDragging = false;
+  // Pack
+  const items=$$('.pack-item input'),pt=$('pack-total'),pc=$('pack-checked');pt.textContent=items.length;const upP=()=>{const n=Array.from(items).filter(i=>i.checked).length;pc.textContent=n;items.forEach(i=>i.closest('.pack-item')?.classList.toggle('checked',i.checked))};items.forEach(i=>i.addEventListener('change',upP));$('pack-reset')?.addEventListener('click',()=>{items.forEach(i=>i.checked=false);upP()});$('pack-print')?.addEventListener('click',()=>window.print());upP();
 
-  compassSvg.addEventListener('mousedown', onStart);
-  compassSvg.addEventListener('touchstart', onStart, { passive: false });
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('touchmove', onMove, { passive: false });
-  window.addEventListener('mouseup', onEnd);
-  window.addEventListener('touchend', onEnd);
+  // Font
+  const fb=['font-sm','font-md','font-lg'];fb.forEach(id=>$(id)?.addEventListener('click',()=>{document.body.style.fontSize={sm:'14px',md:'16px',lg:'20px'}[id.replace('font-','')];fb.forEach(b=>$(b)?.classList.remove('active'));$(id)?.classList.add('active')}));
 
-  document.getElementById('btn-practice').addEventListener('click', () => {
-    const target = Math.floor(Math.random() * 360);
-    bearingDisp.textContent = `Match: ${target}°`;
-    const check = setInterval(() => {
-      if (Math.abs(currentAngle - target) <= 5) {
-        clearInterval(check);
-        bearingDisp.textContent = `✓ Correct! ${Math.round(currentAngle)}°`;
-      }
-    }, 100);
-    setTimeout(() => clearInterval(check), 8000);
-  });
+  // SOS
+  $('sos-btn')?.addEventListener('click',()=>{const c=new(window.AudioContext||window.webkitAudioContext)();for(let i=0;i<6;i++){const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;o.type='square';g.gain.setValueAtTime(.3,c.currentTime+i*.5);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.5+.3);o.start(c.currentTime+i*.5);o.stop(c.currentTime+i*.5+.3)}document.body.style.animation='flash .2s 3';setTimeout(()=>document.body.style.animation='',1000)});
 
-  // Live Compass Fallback
-  if (window.DeviceOrientationEvent && window.DeviceOrientationEvent.requestPermission) {
-    compassSvg.addEventListener('click', () => {
-      DeviceOrientationEvent.requestPermission().then(res => {
-        if (res === 'granted') {
-          window.addEventListener('deviceorientation', e => {
-            const heading = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-            document.getElementById('live-val').textContent = Math.round(heading);
-            document.getElementById('live-compass-hint').classList.remove('hidden');
-          });
-        }
-      });
-    });
-  } else if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', e => {
-      const heading = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-      if (heading) {
-        document.getElementById('live-val').textContent = Math.round(heading);
-        document.getElementById('live-compass-hint').classList.remove('hidden');
-      }
-    });
-  }
+  // URL Hash Routing
+  const hashScroll=()=>{const h=location.hash;if(h){const el=document.querySelector(h);if(el)el.scrollIntoView({behavior:'smooth'})}};window.addEventListener('hashchange',hashScroll);window.addEventListener('load',hashScroll);
 
-  // === MORSE CODE (MOBILE OPTIMIZED) ===
-  const morseMap = { A:'.-', B:'-...', C:'-.-.', D:'-..', E:'.', F:'..-.', G:'--.', H:'....', I:'..', J:'.---', K:'-.-', L:'.-..', M:'--', N:'-.', O:'---', P:'.--.', Q:'--.-', R:'.-.', S:'...', T:'-', U:'..-', V:'...-', W:'.--', X:'-..-', Y:'-.--', Z:'--..', '0':'-----', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.', ' ':'/' };
-  const morseInput = document.getElementById('morse-input');
-  const morseDisp = document.getElementById('morse-display');
-  const morseSpeed = document.getElementById('morse-speed');
-  const morseFreq = document.getElementById('morse-freq');
-  const wpmVal = document.getElementById('wpm-val');
-  const freqVal = document.getElementById('freq-val');
-  let audioCtx, isPlaying = false, timeouts = [];
-
-  const updateDisplay = () => {
-    const text = morseInput.value.toUpperCase();
-    morseDisp.innerHTML = text.split('').map(c => `<span data-c="${c}">${morseMap[c] || ''}</span>`).join(' ');
-  };
-  morseInput.addEventListener('input', updateDisplay);
-  morseSpeed.addEventListener('input', () => wpmVal.textContent = morseSpeed.value);
-  morseFreq.addEventListener('input', () => freqVal.textContent = morseFreq.value);
-
-  const playTone = (start, dur, hz) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.frequency.value = hz;
-    gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(0.3, start + 0.005);
-    gain.gain.setValueAtTime(0.3, start + dur - 0.005);
-    gain.gain.linearRampToValueAtTime(0, start + dur);
-    osc.start(start); osc.stop(start + dur);
-  };
-
-  const playMorse = (text) => {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    stopMorse(); isPlaying = true;
-    const wpm = parseInt(morseSpeed.value);
-    const hz = parseInt(morseFreq.value);
-    const dit = 1200 / wpm;
-    let time = audioCtx.currentTime + 0.05;
-    const code = text.toUpperCase().split('').map(c => morseMap[c] || '').join(' ');
-    for (let i = 0; i < code.length; i++) {
-      const sym = code[i];
-      const span = morseDisp.children[i];
-      if (sym === '.') { playTone(time, dit/1000, hz); if(span){span.classList.add('active'); timeouts.push(setTimeout(()=>span.classList.remove('active'), dit));} time += dit/1000 + 0.005; }
-      else if (sym === '-') { playTone(time, dit*3/1000, hz); if(span){span.classList.add('active'); timeouts.push(setTimeout(()=>span.classList.remove('active'), dit*3));} time += dit*3/1000 + 0.005; }
-      else if (sym === '/') { time += dit*7/1000; }
-      else if (sym === ' ') { time += dit*3/1000; }
-    }
-    timeouts.push(setTimeout(() => isPlaying = false, (time - audioCtx.currentTime)*1000 + 50));
-  };
-  const stopMorse = () => { timeouts.forEach(clearTimeout); timeouts = []; isPlaying = false; document.querySelectorAll('.morse-display span').forEach(s => s.classList.remove('active')); };
-
-  document.getElementById('morse-play').addEventListener('click', () => playMorse(morseInput.value || 'SOS'));
-  document.getElementById('morse-stop').addEventListener('click', stopMorse);
-  document.querySelectorAll('.morse-phrase').forEach(el => el.addEventListener('click', () => { morseInput.value = el.dataset.text; updateDisplay(); playMorse(el.dataset.text); }));
-
-  // Generate Morse Table
-  const table = document.getElementById('morse-table');
-  const rows = [0,1,2,3,4].map(i => Object.keys(morseMap).slice(i*7, i*7+7)).filter(r => r.length);
-  table.innerHTML = rows.map(r => `<tr>${r.map(c => `<td class="char" data-c="${c}">${c}</td><td class="code">${morseMap[c]}</td>`).join('')}</tr>`).join('');
-  document.querySelectorAll('.morse-table .char').forEach(td => td.addEventListener('click', () => { morseInput.value = td.dataset.c; updateDisplay(); playMorse(td.dataset.c); }));
-
-  // === SOLAR CALCULATOR ===
-  const solarLoc = document.getElementById('solar-loc');
-  const solarDate = document.getElementById('solar-date');
-  solarDate.valueAsDate = new Date();
-  const calcSolar = () => {
-    const dayOfYear = Math.floor((new Date(solarDate.value) - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-    const dec = 23.45 * Math.sin((360/365) * (284 + dayOfYear) * Math.PI/180);
-    const latMap = { low: 23, mid: 45, high: 60 };
-    const lat = latMap[solarLoc.value];
-    const tilt = Math.round(Math.max(0, Math.min(90, Math.abs(lat - dec))));
-    const hrs = lat < 30 ? 5.5 : lat < 50 ? 4.5 : 3.5;
-    document.getElementById('solar-tilt').textContent = tilt;
-    document.getElementById('solar-hrs').textContent = hrs;
-    document.getElementById('solar-dir').textContent = lat >= 0 ? 'South' : 'North';
-    document.getElementById('solar-loss').textContent = '75-85%';
-    document.getElementById('solar-angle-label').textContent = `${tilt}°`;
-    document.getElementById('solar-panel-svg').setAttribute('transform', `rotate(${90-tilt} 140 135)`;
-  };
-  solarLoc.addEventListener('change', calcSolar); solarDate.addEventListener('change', calcSolar);
-  calcSolar();
-
-  // === PACK LIST ===
-  const packItems = document.querySelectorAll('.pack-item input');
-  const packTotal = document.getElementById('pack-total');
-  const packChecked = document.getElementById('pack-checked');
-  packTotal.textContent = packItems.length;
-  const updatePack = () => {
-    const checked = Array.from(packItems).filter(i => i.checked).length;
-    packChecked.textContent = checked;
-    packItems.forEach(i => i.closest('.pack-item').classList.toggle('checked', i.checked));
-  };
-  packItems.forEach(i => i.addEventListener('change', updatePack));
-  document.getElementById('pack-reset').addEventListener('click', () => { packItems.forEach(i => i.checked = false); updatePack(); });
-  document.getElementById('pack-print').addEventListener('click', () => window.print());
-  updatePack();
-
-  // === PWA PROMPT ===
-  let deferred; const pwaPrompt = document.getElementById('pwa-prompt');
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; setTimeout(() => pwaPrompt.classList.add('show'), 2000); });
-  pwaPrompt.addEventListener('click', () => { if(deferred) { deferred.prompt(); pwaPrompt.classList.remove('show'); } });
-
-  // === SERVICE WORKER ===
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(() => console.log('SW registered')).catch(err => console.log('SW failed:', err));
-  }
-});
+  // PWA & SW
+  let dp;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('pwa-prompt')?.classList.add('show')});$('pwa-prompt')?.addEventListener('click',()=>{if(dp){dp.prompt();dp=null;$('pwa-prompt').classList.remove('show')}});
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+})();
 </script>
 </body>
 </html>
