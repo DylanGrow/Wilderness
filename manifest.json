@@ -2,17 +2,18 @@
   "name": "Survive - Wilderness Survival Guide",
   "short_name": "Survive",
   "description": "Complete wilderness survival guide with interactive tools. Works fully offline.",
-  "start_url": "/",
+  "start_url": "/Wilderness/",
+  "scope": "/Wilderness/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0f1410",
   "theme_color": "#2d4a1e",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%232d4a1e'/%3E%3Cpath d='M50 15 L60 45 L90 50 L60 55 L50 85 L40 55 L10 50 L40 45 Z' fill='%234a7c3f'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23c9a84c'/%3E%3C/svg%3E",
-      "sizes": "100x100",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='230' fill='%232d4a1e'/%3E%3Cpath d='M256 77 L307 230 L461 256 L307 282 L256 435 L205 282 L51 256 L205 230 Z' fill='%234a7c3f'/%3E%3Ccircle cx='256' cy='256' r='30' fill='%23c9a84c'/%3E%3C/svg%3E",
+      "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
