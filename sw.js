@@ -1,10 +1,11 @@
-const CACHE_NAME = 'survive-v2';
+const CACHE_NAME = 'survive-v3';
+const BASE = '/Wilderness';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/script.js',
-  '/manifest.json'
+  BASE + '/',
+  BASE + '/index.html',
+  BASE + '/styles.css',
+  BASE + '/script.js',
+  BASE + '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
